@@ -2354,4 +2354,5 @@ return [
 	"refunded_refund_Requests" => "Refunded refund Requests",
 	"if_enabled_this_flash_sale_will_be_available_on_the_website_and_customer_app" => "If enabled this flash sale will be available on the website and customer app",
 	"returned_orders" => "Returned orders",
+	"feature" => "Feature",
 ];

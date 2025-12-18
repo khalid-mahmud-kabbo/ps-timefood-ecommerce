@@ -42,19 +42,13 @@
 
     @if ($featuredProductsList->count() > 0 )
     <div class="container pt-4 rtl px-0 px-md-3">
-        <div class="d-flex justify-content-between align-items-baseline mb-14px">
+        <div class="align-items-baseline mb-14px">
                     <h2 class="text-center mb-0">
                     <span class="for-feature-title __text-22px font-bold text-center">
                         {{ translate('featured_products')}}
                     </span>
                     </h2>
-                    <div class="mr-1">
-                        <a class="text-capitalize view-all-text web-text-primary"
-                           href="{{route('products',['data_from'=>'latest'])}}">
-                            {{ translate('view_all')}}
-                            <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
-                        </a>
-                    </div>
+                    
                 </div>
 
 
@@ -72,6 +66,15 @@
                 </div>
                 @endforeach
             </div>
+
+
+            <div class="text-center product-add-and-buy-section mt-3">
+                        <a type="button" href="{{route('products',['data_from'=>'feature'])}}" class="btn btn-secondary element-center justify-content-center m-auto" style="width: 10%;">
+                         <span class="string-limit">{{ translate('view_all') }}</span>
+                         <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
+                    </a>
+
+                    </div>
         </div>
     @endif
 
