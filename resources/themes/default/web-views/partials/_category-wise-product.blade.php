@@ -14,7 +14,7 @@
                     <div>
                        
 
-@include('web-views.partials._category-single-product', ['product'=>$product])
+                    @include('web-views.partials._category-single-product', ['product'=>$product])
 
 
                         

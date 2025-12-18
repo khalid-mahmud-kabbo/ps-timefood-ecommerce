@@ -142,20 +142,67 @@
 
     @include('web-views.partials._deal-of-the-day', ['decimal_point_settings' => $decimalPointSettings])
 
-    <section class="new-arrival-section">
-        <div class="container rtl px-0 px-md-3">
-            <div class="row g-3 mx-max-md-0">
 
-                @if ($bestSellProduct->count() >0)
-                @include('web-views.partials._best-selling')
-                @endif
 
-                @if ($topRatedProducts->count() >0)
-                @include('web-views.partials._top-rated')
+
+
+
+
+
+
+
+
+
+
+
+
+     @if ($bestSellProduct->count() > 0 )
+    <div class="container pt-4 rtl px-0 px-md-3">
+        <div class="align-items-baseline mb-14px">
+                    <h2 class="text-center mb-0">
+                    <span class="for-feature-title __text-22px font-bold text-center">
+                        {{ translate('best_sellings')}}
+                    </span>
+                    </h2>
+                    
+                </div>
+            <div class="row mt-0 g-2">
+                @foreach($bestSellProduct as $key=> $product)
+                @if($product && $key<6)
+                <div class="col-xl-3 col-sm-4 col-md-6 col-lg-4 col-6">
+                    <div>
+                        @include('web-views.partials._best-selling')
+                    </div>
+                </div>
                 @endif
+                @endforeach
             </div>
+            <div class="text-center product-add-and-buy-section mt-3">
+                        <a type="button" href="{{route('products',['data_from'=>'best-selling','page'=>1])}}" class="btn btn-secondary element-center justify-content-center m-auto" style="width: 10%;">
+                         <span class="string-limit">{{ translate('view_all') }}</span>
+                         <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
+                    </a>
+                    </div>
         </div>
-    </section>
+    @endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @if (count($bannerTypeFooterBanner) > 1)
