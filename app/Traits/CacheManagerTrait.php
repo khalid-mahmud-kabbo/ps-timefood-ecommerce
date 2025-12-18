@@ -420,6 +420,17 @@ trait CacheManagerTrait
         });
     }
 
+    public function cacheBannerForTypeBottomBanner()
+    {
+        $themeName = theme_root_path() ?? 'default';
+        $cacheKey = 'cache_banner_type_bottom_banner_' . ($themeName);
+        $this->cacheBannerAllTypeKeys(cacheKey: $cacheKey);
+
+        return Cache::remember($cacheKey, CACHE_FOR_3_HOURS, function () use ($themeName) {
+            return Banner::where(['banner_type' => 'Bottom Banner', 'published' => 1, 'theme' => $themeName])->latest()->get();
+        });
+    }
+
     public function cacheBannerForTypeSidebarBanner()
     {
         $themeName = theme_root_path() ?? 'default';

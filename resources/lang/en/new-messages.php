@@ -2410,4 +2410,6 @@ return [
 	"configure_social_login_options_so_customers_can_sign_in_with_their_social_media." => "Configure social login options so customers can sign in with their social media.",
 	"login_as_your_customer_social_media_login_turn_the_switch_&_setup_the_required_files" => "Login as your customer social media login turn the switch & setup the required files",
 	"banner_added_successfully" => "Banner added successfully",
+	"bottom_Banner" => "Bottom Banner",
+	"Bottom Banner" => "Bottom Banner",
 ];

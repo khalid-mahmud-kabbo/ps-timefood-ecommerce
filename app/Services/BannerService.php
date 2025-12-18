@@ -36,6 +36,7 @@ class BannerService
         if (theme_root_path() == 'default') {
             $bannerTypes = [
                 "Main Banner" => translate('main_Banner'),
+                "Bottom Banner" => translate('bottom_Banner'),
                 "Popup Banner" => translate('popup_Banner'),
                 "Footer Banner" => translate('footer_Banner'),
                 "Main Section Banner" => translate('main_Section_Banner')
@@ -44,6 +45,7 @@ class BannerService
         }elseif (theme_root_path() == 'theme_aster') {
             $bannerTypes = [
                 "Main Banner" => translate('main_Banner'),
+                "Bottom Banner" => translate('bottom_Banner'),
                 "Popup Banner" => translate('popup_Banner'),
                 "Footer Banner" => translate('footer_Banner'),
                 "Main Section Banner" => translate('main_Section_Banner'),
@@ -54,6 +56,7 @@ class BannerService
         }elseif (theme_root_path() == 'theme_fashion') {
             $bannerTypes = [
                 "Main Banner" => translate('main_Banner'),
+                "Bottom Banner" => translate('bottom_Banner'),
                 "Popup Banner" => translate('popup_Banner'),
                 "Promo Banner Left" => translate('promo_banner_left'),
                 "Promo Banner Middle Top" => translate('promo_banner_middle_top'),
