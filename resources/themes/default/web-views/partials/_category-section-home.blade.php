@@ -4,17 +4,6 @@
             <div>
                 <div class="card __shadow h-100 max-md-shadow-0">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-baseline">
-                            <h2 class="categories-title m-0 letter-spacing-0">
-                                <span class="font-semibold">{{ translate('categories')}}</span>
-                            </h2>
-                            <div>
-                                <a class="text-capitalize view-all-text web-text-primary"
-                                   href="{{route('categories')}}">{{ translate('view_all')}}
-                                    <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
-                                </a>
-                            </div>
-                        </div>
                         <div class="d-none d-lg-block">
                             <div class="row mt-3">
                                 @foreach($categories as $key => $category)
