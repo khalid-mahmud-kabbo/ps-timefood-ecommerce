@@ -62,6 +62,7 @@ class HomeController extends Controller
         $bestSellProduct = $this->cacheBestSellProductList();
         $recommendedProduct = $this->cacheHomePageRandomSingleProductItem();
         $bannerTypeMainBanner = $this->cacheBannerForTypeMainBanner();
+        $bannerTypeBottomBanner = $this->cacheBannerForTypeBottomBanner();
         $bannerTypeMainSectionBanner = $this->cacheBannerTable(bannerType: 'Main Section Banner');
         $topVendorsList = ProductManager::getPriorityWiseTopVendorQuery($this->cacheHomePageTopVendorsList());
         $bannerTypeFooterBanner = $this->cacheBannerTable(bannerType: 'Footer Banner', dataLimit: 10);
@@ -95,7 +96,7 @@ class HomeController extends Controller
         return view(VIEW_FILE_NAMES['home'],
             compact(
                 'flashDeal', 'featuredProductsList', 'topRatedProducts', 'bestSellProduct', 'latestProductsList', 'categories', 'brands',
-                'dealOfTheDay', 'topVendorsList', 'homeCategories', 'bannerTypeMainBanner', 'bannerTypeMainSectionBanner',
+                'dealOfTheDay', 'topVendorsList', 'homeCategories', 'bannerTypeMainBanner', 'bannerTypeBottomBanner', 'bannerTypeMainSectionBanner',
                 'current_date', 'recommendedProduct', 'bannerTypeFooterBanner', 'newArrivalProducts', 'clearanceSaleProducts'
             )
         );
@@ -277,6 +278,7 @@ class HomeController extends Controller
 
         $banners = $this->cacheBannerTable();
         $bannerTypeMainBanner = [];
+        $bannerTypeBottomBanner = [];
         $bannerTypeFooterBanner = [];
         $bannerTypeSidebarBanner = [];
         $bannerTypeMainSectionBanner = [];
@@ -286,7 +288,9 @@ class HomeController extends Controller
             $banner['photo_full_url'] = $banner->photo_full_url;
             if ($banner->banner_type == 'Main Banner') {
                 $bannerTypeMainBanner[] = $banner;
-            } elseif ($banner->banner_type == 'Footer Banner') {
+            } elseif ($banner->banner_type == 'Bottom Banner') {
+                $bannerTypeBottomBanner[] = $banner->toArray();
+            }elseif ($banner->banner_type == 'Footer Banner') {
                 $bannerTypeFooterBanner[] = $banner->toArray();
             } elseif ($banner->banner_type == 'Sidebar Banner') {
                 $bannerTypeSidebarBanner[] = $banner;
@@ -327,7 +331,7 @@ class HomeController extends Controller
         return view(VIEW_FILE_NAMES['home'],
             compact(
                 'flashDeal', 'topRatedProducts', 'bestSellProduct', 'latestProductsList', 'featuredProductsList', 'dealOfTheDay', 'topVendorsList',
-                'homeCategories', 'bannerTypeMainBanner', 'bannerTypeFooterBanner', 'randomSingleProduct', 'decimal_point_settings', 'justForYouProducts', 'moreVendors',
+                'homeCategories', 'bannerTypeMainBanner', 'bannerTypeBottomBanner', 'bannerTypeFooterBanner', 'randomSingleProduct', 'decimal_point_settings', 'justForYouProducts', 'moreVendors',
                 'final_category', 'category_slider', 'order_again', 'bannerTypeSidebarBanner', 'bannerTypeMainSectionBanner', 'random_coupon', 'bannerTypeTopSideBanner',
                 'categories', 'topVendorsListSectionShowingStatus', 'clearanceSaleProducts', 'recommendedProduct'
             )
@@ -347,6 +351,7 @@ class HomeController extends Controller
         $topVendorsList = ProductManager::getPriorityWiseTopVendorQuery(query: $this->cacheHomePageTopVendorsList());
         $mostDemandedProducts = $this->cacheMostDemandedProductItem();
         $bannerTypeMainBanner = $this->cacheBannerForTypeMainBanner();
+        $bannerTypeBottomBanner = $this->cacheBannerForTypeBottomBanner();
         $bannerTypePromoBannerLeft = $this->cacheBannerTable(bannerType: 'Promo Banner Left');
         $bannerTypePromoBannerMiddleTop = $this->cacheBannerTable(bannerType: 'Promo Banner Middle Top');
         $bannerTypePromoBannerMiddleBottom = $this->cacheBannerTable(bannerType: 'Promo Banner Middle Bottom');
@@ -444,7 +449,7 @@ class HomeController extends Controller
         $data = [];
         return view(VIEW_FILE_NAMES['home'],
             compact(
-                'activeBrands', 'latestProductsList', 'dealOfTheDay', 'topVendorsList', 'topRatedShops', 'bannerTypeMainBanner', 'mostVisitedCategories', 'randomSingleProduct', 'newSellers', 'bannerTypeSidebarBanner', 'bannerTypeTopSideBanner', 'recentOrderShopList',
+                'activeBrands', 'latestProductsList', 'dealOfTheDay', 'topVendorsList', 'topRatedShops', 'bannerTypeMainBanner', 'bannerTypeBottomBanner', 'mostVisitedCategories', 'randomSingleProduct', 'newSellers', 'bannerTypeSidebarBanner', 'bannerTypeTopSideBanner', 'recentOrderShopList',
                 'categories', 'allProductsColorList', 'allProductsGroupInfo', 'mostSearchingProducts', 'mostDemandedProducts', 'featuredProductsList', 'bannerTypePromoBannerLeft', 'bannerTypePromoBannerMiddleTop', 'bannerTypePromoBannerMiddleBottom', 'bannerTypePromoBannerRight', 'bannerTypePromoBannerBottom', 'currentDate', 'allProductsList', 'flashDeal', 'data', 'clearanceSaleProducts', 'singlePageProductCount', 'recommendedProduct'
             )
         );
