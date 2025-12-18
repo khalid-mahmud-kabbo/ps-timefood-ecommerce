@@ -186,11 +186,52 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @if ($homeCategories->count() > 0)
     @foreach($homeCategories as $category)
     @include('web-views.partials._category-wise-product', ['decimal_point_settings'=>$decimalPointSettings])
     @endforeach
     @endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
