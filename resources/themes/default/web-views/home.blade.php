@@ -50,12 +50,6 @@
                     </h2>
                     
                 </div>
-
-
-
-
-
-
             <div class="row mt-0 g-2">
                 @foreach($featuredProductsList as $product)
                 <div class="col-xl-3 col-sm-4 col-md-6 col-lg-4 col-6">
@@ -66,14 +60,11 @@
                 </div>
                 @endforeach
             </div>
-
-
             <div class="text-center product-add-and-buy-section mt-3">
                         <a type="button" href="{{route('products',['data_from'=>'feature'])}}" class="btn btn-secondary element-center justify-content-center m-auto" style="width: 10%;">
                          <span class="string-limit">{{ translate('view_all') }}</span>
                          <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
                     </a>
-
                     </div>
         </div>
     @endif
