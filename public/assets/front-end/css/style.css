@@ -121,11 +121,15 @@ a {
     display: block;
 }
 
+.product-single-hover .inline_product a {
+    text-align: center;
+}
+
 .product-single-hover .inline_product img {
     transition: all ease 0.5s;
     -o-object-fit: cover;
     object-fit: cover;
-    width: 100%;
+    /* width: 100%; */
     height: 185px;
     border-radius: 10px;
 }

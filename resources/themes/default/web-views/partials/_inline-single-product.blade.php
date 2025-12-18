@@ -2,7 +2,7 @@
 
 <div class="product-single-hover style--card">
     <div class="overflow-hidden position-relative">
-        <div class=" inline_product clickable d-flex justify-content-center">
+        <div class="inline_product clickable d-flex justify-content-center">
             @if(getProductPriceByType(product: $product, type: 'discount', result: 'value') > 0)
                 <div class="d-flex">
                     <span class="for-discount-value p-1 pl-2 pr-2 font-bold fs-13">
@@ -73,7 +73,11 @@
 
 
                 <div class="__btn-grp mt-2 mb-3 product-add-and-buy-section-parent justify-content-center">
-                                        <div class="product-add-and-buy-section gap-2 d-flex">
+
+                     @if($product->product_type == 'physical' && $product->current_stock > 0)
+
+
+                     <div class="product-add-and-buy-section gap-2 d-flex">
             
                             
                                                     <button type="button" class="btn btn-secondary element-center btn-gap-{{Session::get('direction') === "rtl" ? 'left' : 'right'}} product-buy-now-button"
@@ -96,6 +100,18 @@
                                                     </button>
                                                 
                                         </div>
+
+                                        @else
+
+
+                                        <button type="button"
+                                    class="btn request-restock-btn btn-outline-primary fw-semibold product-restock-request-button me-2"
+                            disabled>
+                                {{ translate('stock_out') }}
+                            </button>
+                
+            @endif
+                                        
                                     </div>
                                     
 
