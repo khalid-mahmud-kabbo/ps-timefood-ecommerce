@@ -349,6 +349,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
             Route::get(Customer::SUBSCRIBER_LIST[URI], 'getSubscriberListView')->name('subscriber-list');
             Route::get(Customer::SUBSCRIBER_EXPORT[URI], 'exportSubscribersList')->name('subscriber-list.export');
             Route::get('export', 'exportList')->name('export');
+            Route::get('draft-export', 'exportDraftList')->name('draft-export');
+            Route::post('update-draft-status', 'updateDraftStatus')->name('update-draft-status');
             Route::get(Customer::SEARCH[URI], 'getCustomerList')->name('customer-list-search');
             Route::get(Customer::SEARCH_WITHOUT_ALL_CUSTOMER[URI], 'getCustomerListWithoutAllCustomerName')->name('customer-list-without-all-customer');
             Route::post(Customer::ADD[URI], 'add')->name('add');

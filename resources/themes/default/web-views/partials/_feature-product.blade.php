@@ -66,13 +66,49 @@
                     </span>
                 </h4>
 
-                
+
+
+
+                {{-- updated form --}}
+
+
+
+                <form class="mb-2 addToCartDynamicForm add-to-cart-details-form">
+                                    @csrf
+                                    <input type="hidden" name="id" value="{{ $product->id }}">
+                                    <input type="hidden" name="quantity" class="form-control input-number text-center product-details-cart-qty __inline-29 border-0 "
+                                                           placeholder="{{ translate('1') }}"
+                                                           value="{{ $product->minimum_order_qty ?? 1 }}"
+                                                           data-producttype="{{ $product->product_type }}"
+                                                           min="{{ $product->minimum_order_qty ?? 1 }}"
+                                                           max="{{$product['product_type'] == 'physical' ? $product->current_stock : 100}}">
+                                                           <input type="hidden" class="product-generated-variation-code" name="product_variation_code" data-product-id="{{ $product['id'] }}">
+                                                <input type="hidden" value="" class="product-exist-in-cart-list form-control w-50" name="key">
+
+                                
+
+                                        @if (count(json_decode($product->colors)) > 0)
+                                         @foreach (json_decode($product->colors) as $key => $color)
+                                                                <input type="radio"
+                                                                       id="{{ str_replace(' ', '', ($product->id. '-color-'. str_replace('#','',$color))) }}"
+                                                                       name="color" value="{{ $color }}"
+                                                                       @if($key == 0) checked @endif hidden> 
+                                    
+                                                        @endforeach
+                                        
+                                        @endif
+                                        
 
 
 
 
 
-                <div class="__btn-grp mt-2 mb-3 product-add-and-buy-section-parent justify-content-center">
+
+
+
+
+
+                                    <div class="__btn-grp mt-2 mb-3 product-add-and-buy-section-parent justify-content-center">
 
                      @if($product->product_type == 'physical' && $product->current_stock > 0)
 
@@ -90,7 +126,7 @@
 
                                                     
                                             
-                                                    <button class="btn btn--primary element-center product-add-to-cart-button"
+                                                    <button class="btn btn--primary element-center modified-add-to-cart product-add-to-cart-button"
                                                             type="button"
                                                             data-form=".add-to-cart-details-form"
                                                             data-update="{{ translate('update_cart') }}"
@@ -98,6 +134,8 @@
                                                     >
                                                         <span class="string-limit">{{ translate('add_to_cart') }}</span>
                                                     </button>
+
+                                                    
                                                 
                                         </div>
 
@@ -113,12 +151,10 @@
             @endif
                                         
                                     </div>
-                                    
+                                      
+                                  
 
-
-
-
-
+                                </form>
 
             </div>
         </div>

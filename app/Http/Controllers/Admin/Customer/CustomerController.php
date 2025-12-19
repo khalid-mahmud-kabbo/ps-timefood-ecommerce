@@ -121,24 +121,90 @@ class CustomerController extends BaseController
 
 
 
-public function draftListView(Request $request): View|RedirectResponse
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   public function draftListView(Request $request): View|RedirectResponse
 {
-    // Fetch drafts where at least one of name, email, or phone exists
-    $draft_customers = CheckoutDraft::where(function($query) {
-        $query->whereNotNull('name')
+    // 1. Setup Filters and Pagination settings
+    $searchValue = $request->get('searchValue');
+    $takeItem = $request->get('choose_first');
+    
+    $filters = [
+        'status' => $request['status'] ?? null,
+    ];
+
+    // 2. Handle Date Range Parsing
+    $joiningStartDate = null;
+    $joiningEndDate = null;
+    if (isset($request['joining_date']) && !empty($request['joining_date'])) {
+        $dates = explode(' - ', $request['joining_date']);
+        if (count($dates) !== 2 || !checkDateFormatInMDY($dates[0]) || !checkDateFormatInMDY($dates[1])) {
+            ToastMagic::error(translate('Invalid_date_range_format'));
+            return back();
+        }
+        
+        $joiningStartDate = Carbon::createFromFormat('m/d/Y', $dates[0])->startOfDay();
+        $joiningEndDate = Carbon::createFromFormat('m/d/Y', $dates[1])->endOfDay();
+    }
+
+    // 3. Build the Query
+    $query = CheckoutDraft::where(function($q) {
+            $q->whereNotNull('name')
               ->orWhereNotNull('email')
               ->orWhereNotNull('phone');
-    })
-    ->orderBy('created_at', 'desc')
-    ->paginate(20); // 20 per page
+        })
+        // Apply Status Filter
+        ->when($filters['status'] !== null, function ($q) use ($filters) {
+            $q->where('status', $filters['status']);
+        })
+        ->when($searchValue, function ($q) use ($searchValue) {
+            $q->where(function($sub) use ($searchValue) {
+                $sub->where('name', 'like', "%{$searchValue}%")
+                    ->orWhere('email', 'like', "%{$searchValue}%")
+                    ->orWhere('phone', 'like', "%{$searchValue}%");
+            });
+        })
+        ->when($joiningStartDate && $joiningEndDate, function ($q) use ($joiningStartDate, $joiningEndDate) {
+            $q->whereBetween('created_at', [$joiningStartDate, $joiningEndDate]);
+        })
+        ->orderBy('created_at', 'desc');
 
+    // 4. Handle Data Fetching (Pagination vs "Take First")
+    $limit = getWebConfig(name: WebConfigKey::PAGINATION_LIMIT) ?? 20;
+    
+    if ($takeItem && $takeItem !== 'all') {
+        $draft_customers = $query->take($takeItem)->get();
+    } else {
+        $draft_customers = $query->paginate($limit)->appends($request->all());
+    }
 
-    // Total drafts count
-    $totalCustomers = $draft_customers->count();
+    // 5. Total Count for the Header/Stats
+    // We calculate total based on the valid draft criteria (name/email/phone)
+    $totalCustomers = CheckoutDraft::where(function($q) {
+            $q->whereNotNull('name')
+              ->orWhereNotNull('email')
+              ->orWhereNotNull('phone');
+        })->count();
 
     return view(Customer::DRAFT_LIST[VIEW], [
         'draft_customers' => $draft_customers,
         'totalCustomers' => $totalCustomers,
+        'searchValue' => $searchValue,
+        'filters' => $filters, // Pass filters back to the view to keep dropdowns selected
     ]);
 }
 
@@ -158,6 +224,111 @@ public function draftListView(Request $request): View|RedirectResponse
     ToastMagic::success(translate('draft_deleted_successfully'));
     return back();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public function exportDraftList(Request $request): BinaryFileResponse
+{
+    // 1. Setup Filters (Keep consistent with your ListView)
+    $searchValue = $request->get('searchValue');
+    $takeItem = $request->get('choose_first');
+    $status = $request['status'] ?? null;
+
+    $joiningStartDate = null;
+    $joiningEndDate = null;
+    if (isset($request['joining_date']) && !empty($request['joining_date'])) {
+        $dates = explode(' - ', $request['joining_date']);
+        if (count($dates) === 2) {
+            $joiningStartDate = Carbon::createFromFormat('m/d/Y', $dates[0])->startOfDay();
+            $joiningEndDate = Carbon::createFromFormat('m/d/Y', $dates[1])->endOfDay();
+        }
+    }
+
+    // 2. Build Query
+    $query = CheckoutDraft::where(function($q) {
+            $q->whereNotNull('name')
+              ->orWhereNotNull('email')
+              ->orWhereNotNull('phone');
+        })
+        ->when($status !== null, function ($q) use ($status) {
+            $q->where('status', $status);
+        })
+        ->when($searchValue, function ($q) use ($searchValue) {
+            $q->where(function($sub) use ($searchValue) {
+                $sub->where('name', 'like', "%{$searchValue}%")
+                    ->orWhere('email', 'like', "%{$searchValue}%")
+                    ->orWhere('phone', 'like', "%{$searchValue}%");
+            });
+        })
+        ->when($joiningStartDate && $joiningEndDate, function ($q) use ($joiningStartDate, $joiningEndDate) {
+            $q->whereBetween('created_at', [$joiningStartDate, $joiningEndDate]);
+        })
+        ->orderBy('created_at', 'desc');
+
+    // 3. Get Data
+    $drafts = ($takeItem && $takeItem !== 'all') ? $query->take((int)$takeItem)->get() : $query->get();
+
+    // 4. Map Data to match your Table Columns
+    $exportData = $drafts->map(function ($item, $key) {
+        return [
+            'SL'      => $key + 1,
+            'Date'    => $item->created_at->format('d M, Y'),
+            'Name'    => $item->name ?? translate('unknown'),
+            'Email'   => $item->email ?? 'N/A',
+            'Phone'   => $item->phone ?? 'N/A',
+            'Address' => $item->address ?? translate('No_Address_Found'),
+            'Status'  => ucfirst($item->status),
+        ];
+    });
+
+    // 5. Direct Export
+    return Excel::download(new class($exportData) implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings {
+        private $data;
+        public function __construct($data) { $this->data = $data; }
+        public function collection() { return $this->data; }
+        public function headings(): array {
+            return [
+                translate('SL'), 
+                translate('Date'), 
+                translate('Customer_Name'), 
+                translate('Email'), 
+                translate('Phone'), 
+                translate('Address'), 
+                translate('Status')
+            ];
+        }
+    }, 'Draft_Customer_Export.xlsx');
+}
+
+
+
+public function updateDraftStatus(Request $request)
+{
+    $draft = CheckoutDraft::findOrFail($request->id);
+    $draft->status = $request->status;
+    $draft->save();
+
+    ToastMagic::success(translate('Status_updated_successfully'));
+    return back();
+}
+
+
+
+
+
+
+
 
 
 
