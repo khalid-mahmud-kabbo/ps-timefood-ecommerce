@@ -36,7 +36,7 @@
 
 
 
-
+ @include('web-views.partials._category-section-home')
 
 
 
@@ -91,7 +91,7 @@
 
 
 
-    @include('web-views.partials._category-section-home')
+   
 
     @if(getFeaturedDealsProductList() && (count(getFeaturedDealsProductList())>0))
     <section class="featured_deal">

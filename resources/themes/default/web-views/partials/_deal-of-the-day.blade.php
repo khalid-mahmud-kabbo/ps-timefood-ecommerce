@@ -144,19 +144,13 @@
         <div
             class="{{ (isset($dealOfTheDay->product) || isset($recommendedProduct->discount_type)) ? 'col-xl-9 col-md-8' : 'col-12' }}">
             <div class="latest-product-margin">
-                <div class="d-flex justify-content-between align-items-baseline mb-14px">
+                <div class="align-items-baseline mb-14px">
                     <h2 class="text-center mb-0">
                     <span class="for-feature-title __text-22px font-bold text-center">
                         {{ translate('latest_products')}}
                     </span>
                     </h2>
-                    <div class="mr-1">
-                        <a class="text-capitalize view-all-text web-text-primary"
-                           href="{{route('products',['data_from'=>'latest'])}}">
-                            {{ translate('view_all')}}
-                            <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
-                        </a>
-                    </div>
+                    
                 </div>
 
                 <div class="row mt-0 g-2">
@@ -171,7 +165,18 @@
                             </div>
                         @endif
                     @endforeach
+
+
+
+                    
                 </div>
+
+                <div class="text-center product-add-and-buy-section mt-3">
+                        <a type="button" href="{{route('products',['data_from'=>'latest'])}}" class="btn btn-secondary element-center justify-content-center m-auto" style="width: 10%;">
+                         <span class="string-limit">{{ translate('view_all') }}</span>
+                         <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
+                    </a>
+                    </div>
             </div>
         </div>
     </div>
