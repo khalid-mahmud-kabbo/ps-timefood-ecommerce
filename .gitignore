@@ -1,14 +1,6 @@
 /node_modules
-/public/hot
-/public/storage
-/public/themes
-/storage/*.key
-/storage/app/*
-/storage/framework/cache/*
-/vendor
 .vscode
 .idea
-.env
 *.zip
 .env.backup
 .phpunit.result.cache
