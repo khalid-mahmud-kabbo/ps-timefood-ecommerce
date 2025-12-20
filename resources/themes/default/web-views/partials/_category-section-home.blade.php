@@ -1,6 +1,6 @@
 @if ($categories->count() > 0 )
-    <section class="container py-4 rtl px-0 px-md-3">
-        <div class="__inline-62 pt-3">
+    <section class="container rtl px-0 px-md-3">
+        <div class="__inline-62">
             <div>
                 <div class="card __shadow h-100 max-md-shadow-0">
                     <div class="card-body">
