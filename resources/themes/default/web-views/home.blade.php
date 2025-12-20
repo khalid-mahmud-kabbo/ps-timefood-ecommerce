@@ -193,7 +193,6 @@
                 @endif
                 @endforeach
             </div>
-        </div>
     @endif
 
 
@@ -329,7 +328,6 @@
             @php($brandCount++)
             @endforeach
         </div>
-</div>
 </section>
 @endif
 
