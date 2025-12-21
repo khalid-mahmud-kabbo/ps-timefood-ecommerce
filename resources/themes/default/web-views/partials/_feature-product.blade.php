@@ -110,14 +110,20 @@
                                         data-route="{{route('checkout-details') }}">
                                     <span class="string-limit">{{ translate('buy_now') }}</span>
                                 </button>
-                                
-                                <button class="btn btn--primary element-center product-add-to-cart-button"
-                                        type="button"
+
+
+                                 <button type="button" 
+                                        class="btn btn--primary element-center product-buy-now-button"
                                         data-form=".add-to-cart-details-form-{{ $product->id }}"
-                                        data-update="{{ translate('update_cart') }}"
-                                        data-add="{{ translate('add_to_cart') }}">
+                                        data-auth="{{( getWebConfig(name: 'guest_checkout') == 1 || Auth::guard('customer')->check() ? 'true':'false')}}"
+                                        data-route="{{route('checkout-details') }}">
                                     <span class="string-limit">{{ translate('add_to_cart') }}</span>
                                 </button>
+                                
+            
+
+
+
                             </div>
                         @endif
                     </div>
