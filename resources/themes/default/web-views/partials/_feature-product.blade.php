@@ -67,12 +67,6 @@
                 </h4>
 
 
-
-
-                {{-- updated form --}}
-
-
-
                 <form class="mb-2 addToCartDynamicForm add-to-cart-details-form-{{ $product->id }}" id="add-to-cart-form-{{ $product->id }}">
                     @csrf
                     <input type="hidden" name="id" value="{{ $product->id }}">
@@ -133,18 +127,3 @@
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
