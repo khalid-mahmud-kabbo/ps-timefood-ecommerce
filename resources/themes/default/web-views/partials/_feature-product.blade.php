@@ -73,138 +73,78 @@
 
 
 
-                <form class="mb-2 addToCartDynamicForm add-to-cart-details-form">
-                                    @csrf
-                                    <input type="hidden" name="id" value="{{ $product->id }}">
-                                    <input type="hidden" name="quantity" class="form-control input-number text-center product-details-cart-qty __inline-29 border-0 "
-                                                           placeholder="{{ translate('1') }}"
-                                                           value="{{ $product->minimum_order_qty ?? 1 }}"
-                                                           data-producttype="{{ $product->product_type }}"
-                                                           min="{{ $product->minimum_order_qty ?? 1 }}"
-                                                           max="{{$product['product_type'] == 'physical' ? $product->current_stock : 100}}">
-                                                           <input type="hidden" class="product-generated-variation-code" name="product_variation_code" data-product-id="{{ $product['id'] }}">
-                                                <input type="hidden" value="" class="product-exist-in-cart-list form-control w-50" name="key">
+                <form class="mb-2 addToCartDynamicForm add-to-cart-details-form-{{ $product->id }}" id="add-to-cart-form-{{ $product->id }}">
+                    @csrf
+                    <input type="hidden" name="id" value="{{ $product->id }}">
+                    
+                    <input type="hidden" name="quantity" 
+                           value="{{ $product->minimum_order_qty ?? 1 }}"
+                           data-producttype="{{ $product->product_type }}"
+                           min="{{ $product->minimum_order_qty ?? 1 }}"
+                           max="{{$product['product_type'] == 'physical' ? $product->current_stock : 100}}">
+                    
+                    <input type="hidden" class="product-generated-variation-code" name="product_variation_code" data-product-id="{{ $product['id'] }}">
+                    <input type="hidden" value="" class="product-exist-in-cart-list form-control" name="key">
 
-                                
+                    @if (count(json_decode($product->colors)) > 0)
+                        @foreach (json_decode($product->colors) as $key => $color)
+                            <input type="radio"
+                                   name="color" 
+                                   value="{{ $color }}"
+                                   @if($key == 0) checked @endif 
+                                   hidden> 
+                        @endforeach
+                    @endif
 
-                                        @if (count(json_decode($product->colors)) > 0)
-                                         @foreach (json_decode($product->colors) as $key => $color)
-                                                                <input type="radio"
-                                                                       id="{{ str_replace(' ', '', ($product->id. '-color-'. str_replace('#','',$color))) }}"
-                                                                       name="color" value="{{ $color }}"
-                                                                       @if($key == 0) checked @endif hidden> 
-                                    
-                                                        @endforeach
-                                        
-                                        @endif
-                                        
+                    @foreach (json_decode($product->choice_options) as $key => $choice)
+                        @foreach ($choice->options as $index => $option)
+                            <input type="radio" name="{{ $choice->name }}" value="{{ $option }}" @if($index == 0) checked @endif hidden>
+                        @endforeach
+                    @endforeach
 
-
-
-
-
-
-
-
-
-
-                                    <div class="__btn-grp mt-2 mb-3 product-add-and-buy-section-parent justify-content-center">
-
-                     @if($product->product_type == 'physical' && $product->current_stock > 0)
-
-
-                     <div class="product-add-and-buy-section gap-2 d-flex">
-            
-                            
-                                                    <button type="button" class="btn btn-secondary element-center btn-gap-{{Session::get('direction') === "rtl" ? 'left' : 'right'}} product-buy-now-button"
-                                                            data-form=".add-to-cart-details-form"
-                                                            data-auth="{{( getWebConfig(name: 'guest_checkout') == 1 || Auth::guard('customer')->check() ? 'true':'false')}}"
-                                                            data-route="{{route('checkout-details') }}">
-                                                        <span class="string-limit">{{ translate('buy_now') }}</span>
-                                                    </button>
-                                                    
-
-                                                    
-                                            
-                                                    <button class="btn btn--primary element-center modified-add-to-cart product-add-to-cart-button"
-                                                            type="button"
-                                                            data-form=".add-to-cart-details-form"
-                                                            data-update="{{ translate('update_cart') }}"
-                                                            data-add="{{ translate('add_to_cart') }}"
-                                                    >
-                                                        <span class="string-limit">{{ translate('add_to_cart') }}</span>
-                                                    </button>
-
-                                                    
-                                                
-                                        </div>
-
-                                        @else
-
-
-                                        <button type="button"
-                                    class="btn request-restock-btn btn-outline-primary fw-semibold product-restock-request-button me-2"
-                            disabled>
+                    <div class="__btn-grp mt-2 mb-3 product-add-and-buy-section-parent justify-content-center">
+                        @if($product->product_type == 'physical' && $product->current_stock <= 0)
+                            <button type="button" class="btn btn-outline-primary fw-semibold" disabled>
                                 {{ translate('stock_out') }}
                             </button>
-                
-            @endif
-                                        
-                                    </div>
-                                      
-                                  
-
-                                </form>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                        @else
+                            <div class="product-add-and-buy-section gap-2 d-flex">
+                                <button type="button" 
+                                        class="btn btn-secondary element-center product-buy-now-button"
+                                        data-form=".add-to-cart-details-form-{{ $product->id }}"
+                                        data-auth="{{( getWebConfig(name: 'guest_checkout') == 1 || Auth::guard('customer')->check() ? 'true':'false')}}"
+                                        data-route="{{route('checkout-details') }}">
+                                    <span class="string-limit">{{ translate('buy_now') }}</span>
+                                </button>
+                                
+                                <button class="btn btn--primary element-center product-add-to-cart-button"
+                                        type="button"
+                                        data-form=".add-to-cart-details-form-{{ $product->id }}"
+                                        data-update="{{ translate('update_cart') }}"
+                                        data-add="{{ translate('add_to_cart') }}">
+                                    <span class="string-limit">{{ translate('add_to_cart') }}</span>
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                </form>
 
             </div>
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -298,33 +298,55 @@
 
                     <ul class="navbar-nav flex-wrap">
                     
+                    
+                        
+                        
                         @foreach ($categories as $key=>$category)
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="{{route('products',['category_id'=> $category['id'],'data_from'=>'category','page'=>1])}}"
-                                   data-toggle="dropdown">{{ $category->name }}</a>
-                                 @if ($category->childes->count() > 0)
-                                <ul class="text-align-direction dropdown-menu __dropdown-menu-sizing dropdown-menu-{{Session::get('direction') === "rtl" ? 'right' : 'left'}} scroll-bar">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" 
+           href="{{route('products',['category_id'=> $category['id'],'data_from'=>'category','page'=>1])}}">
+           {{ $category->name }}
+        </a>
 
-                                    @foreach ($category->childes as $sub_category)
-                                            <li class="__inline-17">
-                                                <div>
-                                                    <a class="dropdown-item"
-                                                       href="{{route('products',['sub_category_id'=> $sub_category['id'],'data_from'=>'category','page'=>1])}}">
-                                                        {{$sub_category->name}}
-                                                    </a>
-                                                </div>
-                                            </li>
-                                        
-                                    @endforeach 
-                                    
-                                </ul>
-                                @endif
-                            </li>
-                        @endforeach
+        @if ($category->childes->count() > 0)
+            <ul class="text-align-direction dropdown-menu __dropdown-menu-sizing dropdown-menu-{{Session::get('direction') === "rtl" ? 'right' : 'left'}} scroll-bar">
+                @foreach ($category->childes as $sub_category)
+                    <li class="__inline-17">
+                        <div>
+                            <a class="dropdown-item"
+                               href="{{route('products',['sub_category_id'=> $sub_category['id'],'data_from'=>'category','page'=>1])}}">
+                                {{$sub_category->name}}
+                            </a>
+                        </div>
+                    </li>
+                @endforeach 
+            </ul>
+        @endif
+    </li>
+@endforeach
 
 
 
-                      
+                      <style>
+                          /* Reveal dropdown on hover */
+.nav-item.dropdown:hover > .dropdown-menu {
+    display: block;
+    margin-top: 0; /* Prevents a gap that causes the menu to close */
+}
+
+/* Optional: Add a subtle fade-in effect for a better feel */
+.nav-item.dropdown > .dropdown-menu {
+    transition: all 0.3s ease;
+    opacity: 0;
+    display: block;
+    visibility: hidden;
+}
+
+.nav-item.dropdown:hover > .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+}
+                      </style>
 
 
 
