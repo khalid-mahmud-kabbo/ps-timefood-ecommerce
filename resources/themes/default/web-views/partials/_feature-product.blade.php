@@ -179,6 +179,7 @@
 
                             <form class="mb-2 addToCartDynamicForm add-to-cart-details-form" id="add-to-cart-form-{{ $product->id }}">
                                 @csrf
+                                <input type="hidden" class="product-exist-in-cart-list" name="key" value="">
                                 <input type="hidden" name="id" value="{{ $product->id }}">
 
                                 {{-- Colors --}}
@@ -257,6 +258,8 @@
                                 <div class="__btn-grp mt-2 mb-3 product-add-and-buy-section-parent">
                                     <div class="product-add-and-buy-section gap-2 d-flex">
                                         @if($product['current_stock'] > 0)
+
+                                        
                                         <button type="button"
                         class="btn btn-secondary product-buy-now-button"
                         data-form="#add-to-cart-form-{{ $product->id }}"

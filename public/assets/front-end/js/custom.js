@@ -1082,11 +1082,124 @@ function hideProductDetailsStickySection() {
     });
 }
 
+// function addToCart(
+//     formSelector = ".add-to-cart-details-form",
+//     redirect_to_checkout = false,
+//     url = null
+// ) {
+//     if (checkValidityForVariantPrice(formSelector)) {
+//         $.ajaxSetup({
+//             headers: {
+//                 "X-CSRF-TOKEN": $('meta[name="_token"]').attr("content"),
+//             },
+//         });
+
+//         let existCartItem = $('.product-exist-in-cart-list[name="key"]').val();
+//         let redirectToCheckoutValue = redirect_to_checkout.toString();
+
+//         let formActionUrl = $("#route-cart-add").data("url");
+//         if (existCartItem !== "" && !redirect_to_checkout) {
+//             formActionUrl = $("#route-cart-updateQuantity-guest").data("url");
+//         }
+
+//         $.post({
+//             url: formActionUrl,
+//             data: $(formSelector)
+//                 .serializeArray()
+//                 .concat({
+//                     name: "buy_now",
+//                     value: redirect_to_checkout ? 1 : 0,
+//                 }),
+//             beforeSend: function () {
+//                 $("#loading").show();
+//             },
+//             success: function (response) {
+//                 if (response.status === 2) {
+//                     if (redirectToCheckoutValue !== "false") {
+//                         hideProductDetailsStickySection();
+//                         $("#buyNowModal-body").html(
+//                             response.shippingMethodHtmlView
+//                         );
+//                         $("#quick-view").modal("hide");
+//                         $("#buyNowModal").modal("show");
+//                         return false;
+//                     }
+//                 }
+//                 if (response.status == 1) {
+//                     updateNavCart();
+//                     toastr.success(response.message, {
+//                         CloseButton: true,
+//                         ProgressBar: true,
+//                     });
+
+//                     let actionAddToCartBtn = $(formSelector).find(
+//                         ".product-add-to-cart-button"
+//                     );
+//                     $(formSelector)
+//                         .find('.product-exist-in-cart-list[name="key"]')
+//                         .val(response.in_cart_key);
+//                     actionAddToCartBtn.html(actionAddToCartBtn.data("update"));
+
+//                     if (response?.product_variant_type === "single_variant") {
+//                         $(".add-to-cart-details-form")
+//                             .find(".product-add-to-cart-button")
+//                             .html(actionAddToCartBtn.data("update"));
+//                         $(".add-to-cart-sticky-form")
+//                             .find(".product-add-to-cart-button")
+//                             .html(actionAddToCartBtn.data("update"));
+//                     }
+
+//                     $(".close-quick-view-modal").click();
+
+//                     if (
+//                         redirectToCheckoutValue === "true" &&
+//                         response.redirect_to_url
+//                     ) {
+//                         setTimeout(function () {
+//                             location.href = response.redirect_to_url;
+//                         }, 100);
+//                     } else if (redirectToCheckoutValue === "true") {
+//                         setTimeout(function () {
+//                             location.href = url;
+//                         }, 100);
+//                     }
+
+//                     return false;
+//                 } else if (response.status == 0) {
+//                     if (
+//                         redirectToCheckoutValue !== "false" ||
+//                         !redirect_to_checkout
+//                     ) {
+//                         hideProductDetailsStickySection();
+//                         $("#out-of-stock-modal-message").html(response.message);
+//                         $("#out-of-stock-modal").modal("show");
+//                         return false;
+//                     }
+//                 }
+//             },
+//             complete: function () {
+//                 $("#loading").hide();
+//             },
+//         });
+//     } else {
+//         Swal.fire({
+//             type: "info",
+//             title: "Cart",
+//             text: $("#message-please-choose-all-options").data("text"),
+//         });
+//     }
+// }
+
+
+
 function addToCart(
     formSelector = ".add-to-cart-details-form",
     redirect_to_checkout = false,
     url = null
 ) {
+    // Ensure we are working with a jQuery object of the specific form
+    const $form = $(formSelector);
+
     if (checkValidityForVariantPrice(formSelector)) {
         $.ajaxSetup({
             headers: {
@@ -1094,7 +1207,7 @@ function addToCart(
             },
         });
 
-        let existCartItem = $('.product-exist-in-cart-list[name="key"]').val();
+        let existCartItem = $form.find('.product-exist-in-cart-list[name="key"]').val();
         let redirectToCheckoutValue = redirect_to_checkout.toString();
 
         let formActionUrl = $("#route-cart-add").data("url");
@@ -1104,12 +1217,10 @@ function addToCart(
 
         $.post({
             url: formActionUrl,
-            data: $(formSelector)
-                .serializeArray()
-                .concat({
-                    name: "buy_now",
-                    value: redirect_to_checkout ? 1 : 0,
-                }),
+            data: $form.serializeArray().concat({
+                name: "buy_now",
+                value: redirect_to_checkout ? 1 : 0,
+            }),
             beforeSend: function () {
                 $("#loading").show();
             },
@@ -1117,59 +1228,46 @@ function addToCart(
                 if (response.status === 2) {
                     if (redirectToCheckoutValue !== "false") {
                         hideProductDetailsStickySection();
-                        $("#buyNowModal-body").html(
-                            response.shippingMethodHtmlView
-                        );
+                        $("#buyNowModal-body").html(response.shippingMethodHtmlView);
                         $("#quick-view").modal("hide");
                         $("#buyNowModal").modal("show");
                         return false;
                     }
                 }
+
                 if (response.status == 1) {
                     updateNavCart();
-                    toastr.success(response.message, {
-                        CloseButton: true,
-                        ProgressBar: true,
-                    });
+                    toastr.success(response.message, { CloseButton: true, ProgressBar: true });
 
-                    let actionAddToCartBtn = $(formSelector).find(
-                        ".product-add-to-cart-button"
-                    );
-                    $(formSelector)
-                        .find('.product-exist-in-cart-list[name="key"]')
-                        .val(response.in_cart_key);
+                    // FIXED: Target ONLY the button inside the submitted form
+                    let actionAddToCartBtn = $form.find(".product-add-to-cart-button");
+                    
+                    // Update the hidden key for this specific product
+                    $form.find('.product-exist-in-cart-list[name="key"]').val(response.in_cart_key);
+                    
+                    // Update button text using the data-update attribute
                     actionAddToCartBtn.html(actionAddToCartBtn.data("update"));
 
+                    // FIXED: Removed the global $(".add-to-cart-details-form") selector 
+                    // that was causing all buttons to change.
                     if (response?.product_variant_type === "single_variant") {
-                        $(".add-to-cart-details-form")
-                            .find(".product-add-to-cart-button")
-                            .html(actionAddToCartBtn.data("update"));
-                        $(".add-to-cart-sticky-form")
-                            .find(".product-add-to-cart-button")
-                            .html(actionAddToCartBtn.data("update"));
+                        // If you have a sticky mobile form that also needs updating, 
+                        // you should target it by a specific ID or relationship, 
+                        // not a global class.
+                        $(".add-to-cart-sticky-form").find(".product-add-to-cart-button").html(actionAddToCartBtn.data("update"));
                     }
 
                     $(".close-quick-view-modal").click();
 
-                    if (
-                        redirectToCheckoutValue === "true" &&
-                        response.redirect_to_url
-                    ) {
-                        setTimeout(function () {
-                            location.href = response.redirect_to_url;
-                        }, 100);
+                    if (redirectToCheckoutValue === "true" && response.redirect_to_url) {
+                        setTimeout(() => { location.href = response.redirect_to_url; }, 100);
                     } else if (redirectToCheckoutValue === "true") {
-                        setTimeout(function () {
-                            location.href = url;
-                        }, 100);
+                        setTimeout(() => { location.href = url; }, 100);
                     }
 
                     return false;
                 } else if (response.status == 0) {
-                    if (
-                        redirectToCheckoutValue !== "false" ||
-                        !redirect_to_checkout
-                    ) {
+                    if (redirectToCheckoutValue !== "false" || !redirect_to_checkout) {
                         hideProductDetailsStickySection();
                         $("#out-of-stock-modal-message").html(response.message);
                         $("#out-of-stock-modal").modal("show");
@@ -1189,6 +1287,17 @@ function addToCart(
         });
     }
 }
+
+
+
+
+
+
+
+
+
+
+
 
 function commonFunctionalityForProductView() {
     $(".product-buy-now-button").on("click", function () {
