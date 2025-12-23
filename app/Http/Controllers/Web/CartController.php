@@ -28,6 +28,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
@@ -187,6 +188,7 @@ class CartController extends Controller
     public function addToCart(Request $request): JsonResponse|RedirectResponse
     {
         $cart = CartManager::add_to_cart($request);
+
         if ($cart['status'] == 2) {
             $cart['shippingMethodHtmlView'] = view(VIEW_FILE_NAMES['product_shipping_method_modal_view_partials'], [
                 'shipping_method_list' => $cart['shipping_method_list'],
