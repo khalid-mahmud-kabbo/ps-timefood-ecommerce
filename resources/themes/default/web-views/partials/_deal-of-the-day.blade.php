@@ -1,4 +1,4 @@
-<div class="container rtl">
+<div class="container rtl" style="display: none;">
     <div class="row g-4 pt-2 mt-0 pb-2 __deal-of align-items-start">
         @if(isset($dealOfTheDay->product) || isset($recommendedProduct->discount_type))
             <div class="col-xl-3 col-md-4">
