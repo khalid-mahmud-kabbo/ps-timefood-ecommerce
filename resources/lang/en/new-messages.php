@@ -2435,4 +2435,5 @@ return [
 	"Close" => "Close",
 	"invalid_access" => "Invalid access",
 	"please_choose_all_the_options_first" => "Please choose all the options first",
+	"Already_Requested" => "Already Requested",
 ];
