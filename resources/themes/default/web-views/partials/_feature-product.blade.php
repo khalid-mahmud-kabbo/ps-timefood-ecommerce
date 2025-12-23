@@ -255,13 +255,15 @@
                                 </div>
 
                                 <div class="__btn-grp mt-2 mb-3 product-add-and-buy-section-parent">
-                                    <div class="product-add-and-buy-section gap-2 {!! $product['current_stock'] <= 0 ? '' : 'd-flex' !!}" {!! $product['current_stock'] <= 0 ? 'style="display: none;"' : '' !!}>
-                                        <button type="button" class="btn btn-secondary element-center btn-gap-{{Session::get('direction') === "rtl" ? 'left' : 'right'}} product-buy-now-button"
-                                                data-form=".add-to-cart-details-form"
-                                                data-auth="{{( getWebConfig(name: 'guest_checkout') == 1 || Auth::guard('customer')->check() ? 'true':'false')}}"
-                                                data-route="{{route('checkout-details') }}">
-                                            <span class="string-limit">{{ translate('buy_now') }}</span>
-                                        </button>
+                                    <div class="product-add-and-buy-section gap-2 d-flex">
+                                        @if($product['current_stock'] > 0)
+                                        <button type="button"
+                    class="btn btn-secondary element-center btn-gap-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }} product-buy-now-button"
+                    data-form=".add-to-cart-details-form"
+                    data-auth="{{ (getWebConfig(name: 'guest_checkout') == 1 || Auth::guard('customer')->check()) ? 'true' : 'false' }}"
+                    data-route="{{ route('checkout-details') }}">
+                <span class="string-limit">{{ translate('buy_now') }}</span>
+            </button>
 
                                         <button class="btn btn--primary element-center product-add-to-cart-button"
                                                 type="button"
@@ -270,7 +272,22 @@
                                                 data-add="{{ translate('add_to_cart') }}">
                                             <span class="string-limit">{{ translate('add_to_cart') }}</span>
                                         </button>
+@else
+
+<button type="button"
+                    class="btn request-restock-btn btn-outline-primary fw-semibold product-restock-request-button"
+                    data-auth="{{ auth('customer')->check() ? 'true' : 'false' }}"
+                    data-form=".add-to-cart-details-form"
+                    data-default="{{ translate('Request_Restock') }}"
+                    data-requested="{{ translate('Request_Sent') }}">
+                {{ translate('Request_Restock') }}
+            </button>
+
+            @endif
+                                        
                                     </div>
+
+                                    
                                 </div>
 
                             </form>
