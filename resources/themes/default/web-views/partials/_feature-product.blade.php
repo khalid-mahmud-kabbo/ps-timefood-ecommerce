@@ -177,7 +177,7 @@
                                 </div>
                             @endif
 
-                            <form class="mb-2 addToCartDynamicForm add-to-cart-details-form">
+                            <form class="mb-2 addToCartDynamicForm add-to-cart-details-form" id="add-to-cart-form-{{ $product->id }}">
                                 @csrf
                                 <input type="hidden" name="id" value="{{ $product->id }}">
 
@@ -258,30 +258,30 @@
                                     <div class="product-add-and-buy-section gap-2 d-flex">
                                         @if($product['current_stock'] > 0)
                                         <button type="button"
-                    class="btn btn-secondary element-center btn-gap-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }} product-buy-now-button"
-                    data-form=".add-to-cart-details-form"
-                    data-auth="{{ (getWebConfig(name: 'guest_checkout') == 1 || Auth::guard('customer')->check()) ? 'true' : 'false' }}"
-                    data-route="{{ route('checkout-details') }}">
-                <span class="string-limit">{{ translate('buy_now') }}</span>
-            </button>
+                        class="btn btn-secondary product-buy-now-button"
+                        data-form="#add-to-cart-form-{{ $product->id }}"
+                        data-auth="{{ (getWebConfig(name: 'guest_checkout') == 1 || Auth::guard('customer')->check()) ? 'true' : 'false' }}"
+                        data-route="{{ route('checkout-details') }}">
+                    {{ translate('buy_now') }}
+                </button>
 
-                                        <button class="btn btn--primary element-center product-add-to-cart-button"
-                                                type="button"
-                                                data-form=".add-to-cart-details-form"
-                                                data-update="{{ translate('update_cart') }}"
-                                                data-add="{{ translate('add_to_cart') }}">
-                                            <span class="string-limit">{{ translate('add_to_cart') }}</span>
-                                        </button>
+                <button type="button"
+                        class="btn btn--primary product-add-to-cart-button"
+                        data-form="#add-to-cart-form-{{ $product->id }}"
+                        data-update="{{ translate('update_cart') }}"
+                        data-add="{{ translate('add_to_cart') }}">
+                    {{ translate('add_to_cart') }}
+                </button>
 @else
 
 <button type="button"
-                    class="btn request-restock-btn btn-outline-primary fw-semibold product-restock-request-button"
-                    data-auth="{{ auth('customer')->check() ? 'true' : 'false' }}"
-                    data-form=".add-to-cart-details-form"
-                    data-default="{{ translate('Request_Restock') }}"
-                    data-requested="{{ translate('Request_Sent') }}">
-                {{ translate('Request_Restock') }}
-            </button>
+                        class="btn request-restock-btn btn-outline-primary fw-semibold product-restock-request-button"
+                        data-auth="{{ auth('customer')->check() ? 'true' : 'false' }}"
+                        data-form="#add-to-cart-form-{{ $product->id }}"
+                        data-default="{{ translate('Request_Restock') }}"
+                        data-requested="{{ translate('Request_Sent') }}">
+                    {{ translate('Request_Restock') }}
+                </button>
 
             @endif
                                         
