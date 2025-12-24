@@ -374,75 +374,74 @@ if ($order['order_type'] == 'default_type') {
         $phoneNumber = '0' . substr($phoneNumber, 3);
     }
 
-    if (strlen($phoneNumber) !== 11 || !str_starts_with($phoneNumber, '01')) {
-        logger()->error('Invalid phone for BDCourier', [
-            'original' => $rawPhone,
-            'normalized' => $phoneNumber,
-        ]);
-        $courierData = null;
-    } else {
+    $courierData = null; // default null
+
+    if (strlen($phoneNumber) === 11 && str_starts_with($phoneNumber, '01')) {
 
         $bdcourier = getWebConfig('bdcourier');
         $apiKey = trim($bdcourier['api_key']);
-        $apiUrl = trim($bdcourier['api_url']);
 
         try {
-            $response = Http::timeout(5) // 🔥 HARD LIMIT (no hanging)
-                ->retry(1, 500)          // 🔁 retry once
+            $response = Http::timeout(15)
+                ->retry(1, 500)
                 ->withHeaders([
                     'Authorization' => $apiKey,
-                    'Content-Type'  => 'application/json',
+                    'Content-Type' => 'application/json',
                 ])
                 ->post('https://bdcourier.com/api/courier-check', [
                     'phone' => $phoneNumber,
                 ]);
 
             if ($response->successful()) {
-                $courierData = $response->json();
-
-                dd($courierData);
-                
+                $courierData = $response->json()['courierData'] ?? null;
             } else {
                 logger()->error('BDCourier API Failed', [
                     'status' => $response->status(),
-                    'body'   => $response->body(),
+                    'body' => $response->body(),
+                    'phone' => $phoneNumber
                 ]);
-                $courierData = null;
             }
 
-        } catch (\Throwable $e) {
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            // Timeout
             logger()->error('BDCourier Timeout / Exception', [
                 'error' => $e->getMessage(),
                 'phone' => $phoneNumber,
             ]);
-            $courierData = null;
+        } catch (\Throwable $e) {
+            logger()->error('BDCourier Other Exception', [
+                'error' => $e->getMessage(),
+                'phone' => $phoneNumber,
+            ]);
         }
     }
 
-    $orderCount = $this->orderRepo->getListWhereCount(
-        filters: ['customer_id' => $order['customer_id']]
-    );
+    // Prepare safe Blade variables
+    $courierSummary = $courierData['summary'] ?? [
+        'total_parcel'=>0,
+        'success_parcel'=>0,
+        'cancelled_parcel'=>0,
+        'success_ratio'=>0
+    ];
 
-    return view(
-        Order::VIEW[VIEW],
-        compact(
-            'order',
-            'linkedOrders',
-            'deliveryMen',
-            'totalDelivered',
-            'companyName',
-            'companyWebLogo',
-            'physicalProduct',
-            'countryRestrictStatus',
-            'zipRestrictStatus',
-            'countries',
-            'zipCodes',
-            'orderCount',
-            'isOrderOnlyDigital',
-            'courierData'
-        )
-    );
-} else {
+    $courierList = [];
+    if ($courierData) {
+        foreach ($courierData as $key => $courier) {
+            if ($key === 'summary') continue;
+            $courierList[] = $courier;
+        }
+    }
+
+    $orderCount = $this->orderRepo->getListWhereCount(filters: ['customer_id' => $order['customer_id']]);
+
+    return view(Order::VIEW[VIEW], compact(
+        'order', 'linkedOrders', 'deliveryMen', 'totalDelivered',
+        'companyName', 'companyWebLogo', 'physicalProduct',
+        'countryRestrictStatus', 'zipRestrictStatus',
+        'countries', 'zipCodes', 'orderCount', 'isOrderOnlyDigital',
+        'courierSummary', 'courierList'
+    ));
+}  else {
                     $orderCount = $this->orderRepo->getListWhereCount(filters: ['customer_id' => $order['customer_id'], 'order_type' => 'POS']);
                     return view(Order::VIEW_POS[VIEW], compact('order', 'companyName', 'companyWebLogo', 'orderCount'));
                 }

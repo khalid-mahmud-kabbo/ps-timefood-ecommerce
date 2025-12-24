@@ -588,17 +588,31 @@
 
 
                
+<div class="card">
+                    <div class="card-body text-capitalize d-flex flex-column gap-4">
+                        <div class="d-flex flex-column align-items-center gap-2">
+                            <h2 class="mb-0 text-center">{{translate('courier_order_history')}}</h2>
+                        </div>
 
+              <div>
+    <p>Total Orders: {{ $courierSummary['total_parcel'] }}</p>
+    <p>Successful Orders: {{ $courierSummary['success_parcel'] }}</p>
+    <p>Cancelled Orders: {{ $courierSummary['cancelled_parcel'] }}</p>
+    <p>Success Ratio: {{ $courierSummary['success_ratio'] }}%</p>
 
-                <div class="card mt-3">
-    <div class="card-body">
-
-        <h4>{{ translate('courier_order_history') }}</h4>
-
-
-    </div>
+    @foreach($courierList as $courier)
+        <div style="border:1px solid #ccc; padding:10px; margin:5px;">
+            <img src="{{ $courier['logo'] }}" height="40">
+            <p>{{ $courier['name'] }}</p>
+            <p>Total: {{ $courier['total_parcel'] }}</p>
+            <p>Success: {{ $courier['success_parcel'] }}</p>
+            <p>Cancelled: {{ $courier['cancelled_parcel'] }}</p>
+            <p>Success Ratio: {{ $courier['success_ratio'] }}%</p>
+        </div>
+    @endforeach
 </div>
-
+</div>
+</div>
 
 
 
