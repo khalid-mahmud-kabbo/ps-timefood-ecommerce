@@ -2457,4 +2457,7 @@ return [
 	"if_enabled,bd_courier_option_will_be_unavailable_in_the_system" => "If enabled,bd courier option will be unavailable in the system",
 	"provide_a_api_key" => "Provide a api key",
 	"provide_a_api_url" => "Provide a api url",
+	"bdcourier_information_update_successfully" => "Bdcourier information update successfully",
+	"previus_order_history" => "Previus order history",
+	"courier_order_history" => "Courier order history",
 ];

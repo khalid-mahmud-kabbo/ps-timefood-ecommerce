@@ -13,7 +13,7 @@
 
       @php($bdcourier = getWebConfig('bdcourier'))
         <div class="card mb-3">
-            <form action="{{ route('admin.third-party.bd-courier.update', ['bd-courier']) }}" method="post">
+            <form action="{{ route('admin.third-party.bd-courier.update', ['bdcourier']) }}" method="post">
                 @csrf
                 <div class="card-header px-20 py-3">
                     <h2>{{ translate('BD_Courier_Configuration') }}</h2>

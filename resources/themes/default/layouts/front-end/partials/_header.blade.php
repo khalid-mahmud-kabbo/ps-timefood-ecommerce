@@ -301,7 +301,7 @@
                     
                         
                         
-                        @foreach ($categories as $key=>$category)
+                        {{-- @foreach ($categories as $key=>$category)
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" 
            href="{{route('products',['category_id'=> $category['id'],'data_from'=>'category','page'=>1])}}">
@@ -311,12 +311,35 @@
         @if ($category->childes->count() > 0)
             <ul class="text-align-direction dropdown-menu __dropdown-menu-sizing dropdown-menu-{{Session::get('direction') === "rtl" ? 'right' : 'left'}} scroll-bar">
                 @foreach ($category->childes as $sub_category)
-                    <li class="__inline-17">
+                    <li class="__inline-17 dropdown">
                         <div>
-                            <a class="dropdown-item"
+                            <a class="dropdown-item dropdown-toggle"
                                href="{{route('products',['sub_category_id'=> $sub_category['id'],'data_from'=>'category','page'=>1])}}">
                                 {{$sub_category->name}}
                             </a>
+
+
+@if($subCategory->childes->count()>0)
+                            <ul class="text-align-direction dropdown-menu __dropdown-menu-sizing dropdown-menu-{{Session::get('direction') === "rtl" ? 'right' : 'left'}} scroll-bar">
+                @foreach($subCategory['childes'] as $subSubCategory)
+                    <li class="__inline-17">
+                        <div>
+                            <a class="dropdown-item"
+                               href="{{route('products',['sub_sub_category_id'=> $subSubCategory['id'],'data_from'=>'category','page'=>1])}}">
+                                {{$subSubCategory['name']}}
+                            </a>
+
+                             
+
+                        </div>
+                    </li>
+                    @endforeach
+
+            </ul>
+
+            @endif
+                             
+
                         </div>
                     </li>
                 @endforeach 
@@ -326,15 +349,12 @@
 @endforeach
 
 
-
-                      <style>
-                          /* Reveal dropdown on hover */
+<style>                          
 .nav-item.dropdown:hover > .dropdown-menu {
     display: block;
-    margin-top: 0; /* Prevents a gap that causes the menu to close */
+    margin-top: 0;
 }
 
-/* Optional: Add a subtle fade-in effect for a better feel */
 .nav-item.dropdown > .dropdown-menu {
     transition: all 0.3s ease;
     opacity: 0;
@@ -346,8 +366,92 @@
     opacity: 1;
     visibility: visible;
 }
-                      </style>
+</style> --}}
 
+
+
+
+
+
+@foreach ($categories as $key => $category)
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" 
+           href="{{ route('products', ['category_id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
+           {{ $category->name }}
+        </a>
+
+        @if ($category->childes->count() > 0)
+            <ul class="dropdown-menu __dropdown-menu-sizing dropdown-menu-{{ Session::get('direction') === "rtl" ? 'right' : 'left' }} scroll-bar">
+                @foreach ($category->childes as $sub_category)
+                    <li class="dropdown-submenu"> {{-- Custom class for nesting --}}
+                        <a class="dropdown-item @if($sub_category->childes->count() > 0) dropdown-toggle @endif"
+                           href="{{ route('products', ['sub_category_id' => $sub_category['id'], 'data_from' => 'category', 'page' => 1]) }}">
+                           {{ $sub_category->name }}
+                        </a>
+
+                        {{-- FIX: Variable name must match the loop: $sub_category --}}
+                        @if($sub_category->childes->count() > 0)
+                            <ul class="dropdown-menu">
+                                @foreach($sub_category->childes as $subSubCategory)
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{{ route('products', ['sub_sub_category_id' => $subSubCategory['id'], 'data_from' => 'category', 'page' => 1]) }}">
+                                            {{ $subSubCategory->name }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </li>
+                @endforeach 
+            </ul>
+        @endif
+    </li>
+@endforeach
+
+
+
+<style>
+/* Base Dropdown Logic */
+.dropdown-submenu {
+    position: relative;
+}
+
+/* Show menu on hover for all levels */
+.dropdown:hover > .dropdown-menu,
+.dropdown-submenu:hover > .dropdown-menu {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Sub-menu initial state */
+.dropdown-menu {
+    margin-top: 0;
+    display: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+/* THE FIX: Positioning the Sub-Sub-Category (3rd Level) */
+.dropdown-submenu > .dropdown-menu {
+    top: 0;
+    left: 100%; /* Positions it to the right of the sub-menu */
+    margin-top: -1px;
+}
+
+/* Handle Right-to-Left (RTL) for Arabic/Urdu etc. */
+[dir="rtl"] .dropdown-submenu > .dropdown-menu {
+    left: auto;
+    right: 100%;
+}
+
+/* Ensure the scroll-bar or sizing doesn't hide children */
+.__dropdown-menu-sizing {
+    overflow: visible !important;
+}
+</style>
 
 
 

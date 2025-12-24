@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Order;
 
+use Illuminate\Support\Facades\Http;
 use App\Contracts\Repositories\BusinessSettingRepositoryInterface;
 use App\Contracts\Repositories\CustomerRepositoryInterface;
 use App\Contracts\Repositories\DeliveryCountryCodeRepositoryInterface;
@@ -42,6 +43,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Illuminate\Support\Facades\View as PdfView;
@@ -244,62 +246,151 @@ class OrderController extends BaseController
         return Excel::download(new OrderExport($data), 'Orders.xlsx');
     }
 
-    public function getView(string|int $id, DeliveryCountryCodeService $service, OrderService $orderService): View|RedirectResponse
-    {
-        $countryRestrictStatus = getWebConfig(name: 'delivery_country_restriction');
-        $zipRestrictStatus = getWebConfig(name: 'delivery_zip_code_area_restriction');
-        $deliveryCountry = $this->deliveryCountryCodeRepo->getList(dataLimit: 'all');
-        $countries = $countryRestrictStatus ? $service->getDeliveryCountryArray(deliveryCountryCodes: $deliveryCountry) : GlobalConstant::COUNTRIES;
-        $zipCodes = $zipRestrictStatus ? $this->deliveryZipCodeRepo->getList(dataLimit: 'all') : 0;
-        $companyName = getWebConfig(name: 'company_name');
-        $companyWebLogo = getWebConfig(name: 'company_web_logo');
-        $order = $this->orderRepo->getFirstWhere(params: ['id' => $id], relations: ['details.productAllStatus', 'verificationImages', 'shipping', 'seller.shop', 'offlinePayments', 'deliveryMan']);
 
-        if ($order) {
-            $physicalProduct = false;
-            if (isset($order->details)) {
-                foreach ($order->details as $orderDetail) {
-                    $orderDetailProduct = json_decode($orderDetail?->product_details, true);
-                    if (isset($orderDetail?->product?->product_type) && $orderDetail?->product?->product_type == 'physical') {
-                        $physicalProduct = true;
-                    } else if ($orderDetailProduct && isset($orderDetailProduct['product_type']) && $orderDetailProduct['product_type'] == 'physical') {
-                        $physicalProduct = true;
+
+
+
+
+
+
+
+
+        // public function getView(string|int $id, DeliveryCountryCodeService $service, OrderService $orderService): View|RedirectResponse
+        // {
+        //     $countryRestrictStatus = getWebConfig(name: 'delivery_country_restriction');
+        //     $zipRestrictStatus = getWebConfig(name: 'delivery_zip_code_area_restriction');
+        //     $deliveryCountry = $this->deliveryCountryCodeRepo->getList(dataLimit: 'all');
+        //     $countries = $countryRestrictStatus ? $service->getDeliveryCountryArray(deliveryCountryCodes: $deliveryCountry) : GlobalConstant::COUNTRIES;
+        //     $zipCodes = $zipRestrictStatus ? $this->deliveryZipCodeRepo->getList(dataLimit: 'all') : 0;
+        //     $companyName = getWebConfig(name: 'company_name');
+        //     $companyWebLogo = getWebConfig(name: 'company_web_logo');
+        //     $order = $this->orderRepo->getFirstWhere(params: ['id' => $id], relations: ['details.productAllStatus', 'verificationImages', 'shipping', 'seller.shop', 'offlinePayments', 'deliveryMan']);
+
+        //     if ($order) {
+        //         $physicalProduct = false;
+        //         if (isset($order->details)) {
+        //             foreach ($order->details as $orderDetail) {
+        //                 $orderDetailProduct = json_decode($orderDetail?->product_details, true);
+        //                 if (isset($orderDetail?->product?->product_type) && $orderDetail?->product?->product_type == 'physical') {
+        //                     $physicalProduct = true;
+        //                 } else if ($orderDetailProduct && isset($orderDetailProduct['product_type']) && $orderDetailProduct['product_type'] == 'physical') {
+        //                     $physicalProduct = true;
+        //                 }
+        //             }
+        //         }
+
+        //         $whereNotIn = [
+        //             'order_group_id' => ['def-order-group'],
+        //             'id' => [$order['id']],
+        //         ];
+        //         $linkedOrders = $this->orderRepo->getListWhereNotIn(filters: ['order_group_id' => $order['order_group_id']], whereNotIn: $whereNotIn, dataLimit: 'all');
+        //         $totalDelivered = $this->orderRepo->getListWhere(filters: ['seller_id' => $order['seller_id'], 'order_status' => 'delivered', 'order_type' => 'default_type'], dataLimit: 'all')->count();
+        //         $shippingMethod = getWebConfig('shipping_method');
+
+        //         $sellerId = 0;
+        //         if ($order['seller_is'] == 'seller' && $shippingMethod == 'sellerwise_shipping') {
+        //             $sellerId = $order['seller_id'];
+        //         }
+        //         $filters = [
+        //             'is_active' => 1,
+        //             'seller_id' => $sellerId,
+        //         ];
+        //         $deliveryMen = $this->deliveryManRepo->getListWhere(filters: $filters, dataLimit: 'all');
+        //         $isOrderOnlyDigital = $orderService->getCheckIsOrderOnlyDigital(order: $order);
+        //         if ($order['order_type'] == 'default_type') {
+        //             $orderCount = $this->orderRepo->getListWhereCount(filters: ['customer_id' => $order['customer_id']]);
+        //             return view(Order::VIEW[VIEW], compact('order', 'linkedOrders',
+        //                 'deliveryMen', 'totalDelivered', 'companyName', 'companyWebLogo', 'physicalProduct',
+        //                 'countryRestrictStatus', 'zipRestrictStatus', 'countries', 'zipCodes', 'orderCount', 'isOrderOnlyDigital'));
+        //         } else {
+        //             $orderCount = $this->orderRepo->getListWhereCount(filters: ['customer_id' => $order['customer_id'], 'order_type' => 'POS']);
+        //             return view(Order::VIEW_POS[VIEW], compact('order', 'companyName', 'companyWebLogo', 'orderCount'));
+        //         }
+        //     } else {
+        //         ToastMagic::error(translate('Order_not_found'));
+        //         return back();
+        //     }
+        // }
+
+
+
+
+
+        public function getView(string|int $id, DeliveryCountryCodeService $service, OrderService $orderService): View|RedirectResponse
+        {
+            $countryRestrictStatus = getWebConfig(name: 'delivery_country_restriction');
+            $zipRestrictStatus = getWebConfig(name: 'delivery_zip_code_area_restriction');
+            $deliveryCountry = $this->deliveryCountryCodeRepo->getList(dataLimit: 'all');
+            $countries = $countryRestrictStatus ? $service->getDeliveryCountryArray(deliveryCountryCodes: $deliveryCountry) : GlobalConstant::COUNTRIES;
+            $zipCodes = $zipRestrictStatus ? $this->deliveryZipCodeRepo->getList(dataLimit: 'all') : 0;
+            $companyName = getWebConfig(name: 'company_name');
+            $companyWebLogo = getWebConfig(name: 'company_web_logo');
+            $order = $this->orderRepo->getFirstWhere(params: ['id' => $id], relations: ['details.productAllStatus', 'verificationImages', 'shipping', 'seller.shop', 'offlinePayments', 'deliveryMan']);
+
+            if ($order) {
+                $physicalProduct = false;
+                if (isset($order->details)) {
+                    foreach ($order->details as $orderDetail) {
+                        $orderDetailProduct = json_decode($orderDetail?->product_details, true);
+                        if (isset($orderDetail?->product?->product_type) && $orderDetail?->product?->product_type == 'physical') {
+                            $physicalProduct = true;
+                        } else if ($orderDetailProduct && isset($orderDetailProduct['product_type']) && $orderDetailProduct['product_type'] == 'physical') {
+                            $physicalProduct = true;
+                        }
                     }
                 }
-            }
 
-            $whereNotIn = [
-                'order_group_id' => ['def-order-group'],
-                'id' => [$order['id']],
-            ];
-            $linkedOrders = $this->orderRepo->getListWhereNotIn(filters: ['order_group_id' => $order['order_group_id']], whereNotIn: $whereNotIn, dataLimit: 'all');
-            $totalDelivered = $this->orderRepo->getListWhere(filters: ['seller_id' => $order['seller_id'], 'order_status' => 'delivered', 'order_type' => 'default_type'], dataLimit: 'all')->count();
-            $shippingMethod = getWebConfig('shipping_method');
+                $whereNotIn = [
+                    'order_group_id' => ['def-order-group'],
+                    'id' => [$order['id']],
+                ];
+                $linkedOrders = $this->orderRepo->getListWhereNotIn(filters: ['order_group_id' => $order['order_group_id']], whereNotIn: $whereNotIn, dataLimit: 'all');
+                $totalDelivered = $this->orderRepo->getListWhere(filters: ['seller_id' => $order['seller_id'], 'order_status' => 'delivered', 'order_type' => 'default_type'], dataLimit: 'all')->count();
+                $shippingMethod = getWebConfig('shipping_method');
 
-            $sellerId = 0;
-            if ($order['seller_is'] == 'seller' && $shippingMethod == 'sellerwise_shipping') {
-                $sellerId = $order['seller_id'];
-            }
-            $filters = [
-                'is_active' => 1,
-                'seller_id' => $sellerId,
-            ];
-            $deliveryMen = $this->deliveryManRepo->getListWhere(filters: $filters, dataLimit: 'all');
-            $isOrderOnlyDigital = $orderService->getCheckIsOrderOnlyDigital(order: $order);
-            if ($order['order_type'] == 'default_type') {
-                $orderCount = $this->orderRepo->getListWhereCount(filters: ['customer_id' => $order['customer_id']]);
-                return view(Order::VIEW[VIEW], compact('order', 'linkedOrders',
-                    'deliveryMen', 'totalDelivered', 'companyName', 'companyWebLogo', 'physicalProduct',
-                    'countryRestrictStatus', 'zipRestrictStatus', 'countries', 'zipCodes', 'orderCount', 'isOrderOnlyDigital'));
+                $sellerId = 0;
+                if ($order['seller_is'] == 'seller' && $shippingMethod == 'sellerwise_shipping') {
+                    $sellerId = $order['seller_id'];
+                }
+                $filters = [
+                    'is_active' => 1,
+                    'seller_id' => $sellerId,
+                ];
+                $deliveryMen = $this->deliveryManRepo->getListWhere(filters: $filters, dataLimit: 'all');
+                $isOrderOnlyDigital = $orderService->getCheckIsOrderOnlyDigital(order: $order);
+                if ($order['order_type'] == 'default_type') {
+
+                    $shippingAddress = $order['shipping_address_data'] ?? null;
+                    $phoneNumber = $shippingAddress->phone;
+
+                    dd($phoneNumber);
+
+
+
+
+                    $orderCount = $this->orderRepo->getListWhereCount(filters: ['customer_id' => $order['customer_id']]);
+                    return view(Order::VIEW[VIEW], compact('order', 'linkedOrders',
+                        'deliveryMen', 'totalDelivered', 'companyName', 'companyWebLogo', 'physicalProduct',
+                        'countryRestrictStatus', 'zipRestrictStatus', 'countries', 'zipCodes', 'orderCount', 'isOrderOnlyDigital'));
+                } else {
+                    $orderCount = $this->orderRepo->getListWhereCount(filters: ['customer_id' => $order['customer_id'], 'order_type' => 'POS']);
+                    return view(Order::VIEW_POS[VIEW], compact('order', 'companyName', 'companyWebLogo', 'orderCount'));
+                }
             } else {
-                $orderCount = $this->orderRepo->getListWhereCount(filters: ['customer_id' => $order['customer_id'], 'order_type' => 'POS']);
-                return view(Order::VIEW_POS[VIEW], compact('order', 'companyName', 'companyWebLogo', 'orderCount'));
+                ToastMagic::error(translate('Order_not_found'));
+                return back();
             }
-        } else {
-            ToastMagic::error(translate('Order_not_found'));
-            return back();
         }
-    }
+
+
+
+
+
+
+
+
+
+
 
     public function generateInvoice(string|int $id)
     {
