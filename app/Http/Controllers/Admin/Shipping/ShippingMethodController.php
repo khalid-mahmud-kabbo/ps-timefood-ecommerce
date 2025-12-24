@@ -95,6 +95,13 @@ class ShippingMethodController extends BaseController
         return view('admin-views.shipping-method.index', compact('allCategoryShippingCost', 'shippingMethods', 'adminShipping'));
     }
 
+
+
+
+
+
+
+
     /**
      * @param ShippingMethodRequest $request
      * @return RedirectResponse
@@ -131,6 +138,7 @@ class ShippingMethodController extends BaseController
         }
         return back();
     }
+
 
     /**
      * @param ShippingMethodRequest $request

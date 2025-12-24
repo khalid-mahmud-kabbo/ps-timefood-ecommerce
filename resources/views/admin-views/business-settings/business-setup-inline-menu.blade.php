@@ -54,6 +54,15 @@
                 {{ translate('Shipping_Method') }}
             </a>
         </li>
+
+        <li class="nav-item">
+            <a class="nav-link {{ Request::is('admin/business-settings/shipping-method/bdcourier') ? 'active' : '' }}"
+                href="{{ route('admin.business-settings.shipping-method.bdcourier') }}">
+                {{ translate('BD_Courier_Setup') }}
+            </a>
+        </li>
+
+
         <li class="nav-item">
             <a class="nav-link {{ Request::is('admin/business-settings/delivery-restriction') ? 'active' : '' }}"
                 href="{{ route('admin.business-settings.delivery-restriction.index') }}">

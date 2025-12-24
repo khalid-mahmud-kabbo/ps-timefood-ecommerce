@@ -127,7 +127,7 @@ use App\Http\Controllers\Admin\Deliveryman\DeliveryManCashCollectController;
 use App\Http\Controllers\Admin\Settings\StorageConnectionSettingsController;
 use App\Http\Controllers\Admin\Settings\VendorRegistrationSettingController;
 use App\Http\Controllers\Admin\Notification\PushNotificationSettingsController;
-
+use App\Http\Controllers\Admin\ThirdParty\BDCourierController;
 
 Route::controller(SharedController::class)->group(function () {
     Route::post('change-language', 'changeLanguage')->name('change-language');
@@ -883,6 +883,16 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
                     Route::post('update/{service}', 'update')->name('update');
                 });
             });
+
+
+            Route::group(['prefix' => 'bd-courier', 'as' => 'bd-courier.'], function () {
+                Route::controller(BDCourierController::class)->group(function () {
+                    Route::get('view', 'index')->name('view');
+                    Route::post('update/{service}', 'update')->name('update');
+                });
+            });
+
+
 
             Route::group(['prefix' => 'mail', 'as' => 'mail.'], function () {
                 Route::controller(MailController::class)->group(function () {
