@@ -358,21 +358,91 @@ class OrderController extends BaseController
                 ];
                 $deliveryMen = $this->deliveryManRepo->getListWhere(filters: $filters, dataLimit: 'all');
                 $isOrderOnlyDigital = $orderService->getCheckIsOrderOnlyDigital(order: $order);
-                if ($order['order_type'] == 'default_type') {
+                
+                
+                
+                
+                
+                
+if ($order['order_type'] == 'default_type') {
 
-                    $shippingAddress = $order['shipping_address_data'] ?? null;
-                    $phoneNumber = $shippingAddress->phone;
+    $shippingAddress = $order['shipping_address_data'] ?? null;
+    $rawPhone = $shippingAddress->phone ?? '';
+    $phoneNumber = preg_replace('/[^0-9]/', '', $rawPhone);
 
-                    dd($phoneNumber);
+    if (str_starts_with($phoneNumber, '880') && strlen($phoneNumber) === 13) {
+        $phoneNumber = '0' . substr($phoneNumber, 3);
+    }
 
+    if (strlen($phoneNumber) !== 11 || !str_starts_with($phoneNumber, '01')) {
+        logger()->error('Invalid phone for BDCourier', [
+            'original' => $rawPhone,
+            'normalized' => $phoneNumber,
+        ]);
+        $courierData = null;
+    } else {
 
+        $bdcourier = getWebConfig('bdcourier');
+        $apiKey = trim($bdcourier['api_key']);
+        $apiUrl = trim($bdcourier['api_url']);
 
+        try {
+            $response = Http::timeout(5) // 🔥 HARD LIMIT (no hanging)
+                ->retry(1, 500)          // 🔁 retry once
+                ->withHeaders([
+                    'Authorization' => $apiKey,
+                    'Content-Type'  => 'application/json',
+                ])
+                ->post('https://bdcourier.com/api/courier-check', [
+                    'phone' => $phoneNumber,
+                ]);
 
-                    $orderCount = $this->orderRepo->getListWhereCount(filters: ['customer_id' => $order['customer_id']]);
-                    return view(Order::VIEW[VIEW], compact('order', 'linkedOrders',
-                        'deliveryMen', 'totalDelivered', 'companyName', 'companyWebLogo', 'physicalProduct',
-                        'countryRestrictStatus', 'zipRestrictStatus', 'countries', 'zipCodes', 'orderCount', 'isOrderOnlyDigital'));
-                } else {
+            if ($response->successful()) {
+                $courierData = $response->json();
+
+                dd($courierData);
+                
+            } else {
+                logger()->error('BDCourier API Failed', [
+                    'status' => $response->status(),
+                    'body'   => $response->body(),
+                ]);
+                $courierData = null;
+            }
+
+        } catch (\Throwable $e) {
+            logger()->error('BDCourier Timeout / Exception', [
+                'error' => $e->getMessage(),
+                'phone' => $phoneNumber,
+            ]);
+            $courierData = null;
+        }
+    }
+
+    $orderCount = $this->orderRepo->getListWhereCount(
+        filters: ['customer_id' => $order['customer_id']]
+    );
+
+    return view(
+        Order::VIEW[VIEW],
+        compact(
+            'order',
+            'linkedOrders',
+            'deliveryMen',
+            'totalDelivered',
+            'companyName',
+            'companyWebLogo',
+            'physicalProduct',
+            'countryRestrictStatus',
+            'zipRestrictStatus',
+            'countries',
+            'zipCodes',
+            'orderCount',
+            'isOrderOnlyDigital',
+            'courierData'
+        )
+    );
+} else {
                     $orderCount = $this->orderRepo->getListWhereCount(filters: ['customer_id' => $order['customer_id'], 'order_type' => 'POS']);
                     return view(Order::VIEW_POS[VIEW], compact('order', 'companyName', 'companyWebLogo', 'orderCount'));
                 }

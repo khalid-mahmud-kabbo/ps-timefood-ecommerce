@@ -587,67 +587,20 @@
 
 
 
-@if($shippingAddress)
+               
 
 
-@php(
-        $bdcourier = getWebConfig('bdcourier');
-        // Safely get config regardless of it being an array or object
-        $apiKey = is_array($bdcourier) ? ($bdcourier['api_key'] ?? '') : ($bdcourier->api_key ?? '');
-        $apiUrl = is_array($bdcourier) ? ($bdcourier['api_url'] ?? '') : ($bdcourier->api_url ?? '');
-        $customerPhone = $shippingAddress->phone;
-        
-        
-        $courierCheckData = null;
+                <div class="card mt-3">
+    <div class="card-body">
 
-        if ($customerPhone && $apiKey && $apiUrl) {
-            $response = \Illuminate\Support\Facades\Http::withHeaders([
-                "Content-Type" => "application/json",
-                "Authorization" => "Bearer " . $apiKey,
-            ])->post($apiUrl, ["phone" => $customerPhone]);
+        <h4>{{ translate('courier_order_history') }}</h4>
 
-            if ($response->successful()) {
-                $courierCheckData = $response->json();
-            }
-        }
-    )
 
-   <div class="card mt-3">
-        <div class="card-body text-capitalize d-flex flex-column gap-4">
-            <div class="d-flex flex-column align-items-center gap-2">
-                <h2 class="mb-0 text-center">{{translate('courier_order_history')}}</h2>
-            </div>
-
-            <div class="row text-center">
-                <div class="col-md-4">
-                    <div class="p-3 border rounded">
-                        <span class="text-muted d-block mb-1">{{translate('total_orders')}}</span>
-                        <h4 class="mb-0">{{ data_get($courierCheckData, 'total_orders', 0) }}</h4>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="p-3 border rounded">
-                        <span class="text-muted d-block mb-1">{{translate('success_ratio')}}</span>
-                        <h4 class="mb-0 text-success">{{ data_get($courierCheckData, 'success_ratio', '0%') }}</h4>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="p-3 border rounded">
-                        <span class="text-muted d-block mb-1">{{translate('fraud_status')}}</span>
-                        <h4 class="mb-0 {{ data_get($courierCheckData, 'fraud_status') == 'Yes' ? 'text-danger' : 'text-success' }}">
-                            {{ data_get($courierCheckData, 'fraud_status', 'No') }}
-                        </h4>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-2 small text-muted border-top pt-2 text-center">
-                <strong>API URL:</strong> {{ $apiUrl }} | 
-                <strong>Number:</strong> {{ $customerPhone }}
-            </div>
-        </div>
     </div>
-@endif
+</div>
+
+
+
 
 
 
