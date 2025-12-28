@@ -128,6 +128,7 @@ use App\Http\Controllers\Admin\Settings\StorageConnectionSettingsController;
 use App\Http\Controllers\Admin\Settings\VendorRegistrationSettingController;
 use App\Http\Controllers\Admin\Notification\PushNotificationSettingsController;
 use App\Http\Controllers\Admin\ThirdParty\BDCourierController;
+use App\Http\Controllers\Admin\ThirdParty\CourierConfigureController;
 
 Route::controller(SharedController::class)->group(function () {
     Route::post('change-language', 'changeLanguage')->name('change-language');
@@ -885,8 +886,16 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
             });
 
 
-            Route::group(['prefix' => 'bd-courier', 'as' => 'bd-courier.'], function () {
+            Route::group(['prefix' => 'fraud-checker', 'as' => 'fraud-checker.'], function () {
                 Route::controller(BDCourierController::class)->group(function () {
+                    Route::get('view', 'index')->name('view');
+                    Route::post('update/{service}', 'update')->name('update');
+                });
+            });
+
+
+              Route::group(['prefix' => 'courier-configuration', 'as' => 'courier-configuration.'], function () {
+                Route::controller(CourierConfigureController::class)->group(function () {
                     Route::get('view', 'index')->name('view');
                     Route::post('update/{service}', 'update')->name('update');
                 });

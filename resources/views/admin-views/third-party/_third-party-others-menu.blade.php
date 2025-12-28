@@ -22,12 +22,7 @@
             </a>
         </li>
 
-        <li class="nav-item">
-            <a class="nav-link {{ Request::is('admin/third-party/bd-courier/view') ?'active':'' }}"
-               href="{{ route('admin.third-party.bd-courier.view') }}">
-                {{ translate('BD_Courier_configuration') }}
-            </a>
-        </li>
+       
 
         <li class="nav-item">
             <a class="nav-link {{ Request::is('admin/third-party/recaptcha') ?'active':'' }}"

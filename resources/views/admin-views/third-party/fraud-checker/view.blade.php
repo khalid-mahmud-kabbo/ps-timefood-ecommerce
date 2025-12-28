@@ -1,24 +1,22 @@
 @extends('layouts.admin.app')
 
-@section('title', translate('social_Login'))
+@section('title', translate('Fraud_Checking_Configuration'))
 
 @section('content')
     <div class="content container-fluid">
         <div class="mb-3 mb-sm-20">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                {{ translate('3rd Party - Other Configurations') }}
+                {{ translate('3rd Party - Fraud Checking Configuration') }}
             </h2>
         </div>
-        @include('admin-views.third-party._third-party-others-menu')
-
       @php($bdcourier = getWebConfig('bdcourier'))
         <div class="card mb-3">
-            <form action="{{ route('admin.third-party.bd-courier.update', ['bdcourier']) }}" method="post">
+            <form action="{{ route('admin.third-party.fraud-checker.update', ['bdcourier']) }}" method="post">
                 @csrf
                 <div class="card-header px-20 py-3">
-                    <h2>{{ translate('BD_Courier_Configuration') }}</h2>
+                    <h2>{{ translate('Fraud_Checking_Configuration') }}</h2>
                     <p class="mb-0 fs-12">
-                        {{ translate('setup_BD_Courier_to_track_fraud_and_analyze_orders') }}.
+                        {{ translate('setup_fraud_checker_to_track_fraud_and_analyze_orders') }}.
                     </p>
                 </div>
                 <div class="card-body">
@@ -42,22 +40,6 @@
                                                 {{ translate('View') }}
                                                 <i class="fi fi-rr-arrow-small-down fs-16 trans3"></i>
                                             </a>
-                                            <label class="switcher" for="whatsapp-id">
-                                                <input
-                                                    class="switcher_input custom-modal-plugin"
-                                                    type="checkbox" value="1" name="status"
-                                                    id="whatsapp-id"
-                                                    data-modal-type="input-change"
-                                                    data-on-image="{{ dynamicAsset(path: 'public/assets/new/back-end/img/modal/social/bd-courier.png') }}"
-                                                    data-off-image="{{ dynamicAsset(path: 'public/assets/new/back-end/img/modal/social/bd-courier.png') }}"
-                                                    data-on-title="{{ translate('want_to_turn_ON_BD_Courier_as_fraud_checking_option').'?'}}"
-                                                    data-off-title="{{ translate('want_to_turn_OFF_BD_Courier_as_fraud_checking_option').'?'}}"
-                                                    data-on-message="<p>{{ translate('if_enabled,bd_courier_option_will_be_available_in_the_system') }}</p>"
-                                                    data-off-message="<p>{{ translate('if_enabled,bd_courier_option_will_be_unavailable_in_the_system') }}</p>"
-                                                    data-on-button-text="{{ translate('turn_on') }}"
-                                                    data-off-button-text="{{ translate('turn_off') }}">
-                                                <span class="switcher_control"></span>
-                                            </label>
                                         </div>
                                     </div>
                                     <div class="d--none view-details mt-3 mt-sm-4">
