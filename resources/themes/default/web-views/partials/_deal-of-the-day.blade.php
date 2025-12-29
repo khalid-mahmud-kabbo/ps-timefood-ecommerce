@@ -162,7 +162,7 @@
                     @foreach($latestProductsList as $product)
                         @if($latestProductsListIndex < 8)
                             @php($latestProductsListIndex++)
-                            <div class="col-xl-3 col-sm-4 col-md-6 col-lg-4 col-6">
+                            <div class="col-xl-3 col-sm-4 col-md-6 col-lg-4 col-6 latest-section">
                                 <div>
                                     @include('web-views.partials._inline-single-product',['product'=>$product,'decimal_point_settings'=>$decimal_point_settings])
                                 </div>

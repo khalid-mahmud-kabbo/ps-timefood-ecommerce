@@ -10118,3 +10118,12 @@ body *::-webkit-scrollbar-thumb {
 .gap-20 {
     gap: 20px !important;
 }
+
+
+
+@media (max-width: 767px) {
+    .__slide-img.__slide-img-170 {
+        height: 110px !important;
+        object-position: unset !important;
+    }
+}
