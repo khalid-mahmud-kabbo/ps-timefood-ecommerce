@@ -184,7 +184,7 @@
 
                                 {{-- Colors --}}
                                 @if(count($colors) > 0)
-                                    <div class="flex-start align-items-center mb-2 gap-2">
+                                    <div class="flex-start align-items-center mb-2 gap-2" style="display:none;">
                                         <div class="product-description-label m-0 text-dark font-bold">{{ translate('color') }}:</div>
                                         <ul class="list-inline checkbox-color mb-0 flex-start ms-2 ps-0">
                                             @foreach($colors as $key => $color)
@@ -203,7 +203,7 @@
                                 @foreach($choiceOptions as $choice)
                                     @php($options = $choice->options ?? [])
                                     @if(count($options) > 0)
-                                        <div class="row flex-start mx-0 align-items-center">
+                                        <div class="row flex-start mx-0 align-items-center d-none" style="display:none;">
                                             <div class="product-description-label text-dark font-bold text-capitalize mb-2">{{ $choice->title }}:</div>
                                             <div>
                                                 <div class="list-inline checkbox-alphanumeric checkbox-alphanumeric--style-1 mb-0 mx-1 flex-start row ps-0">
@@ -225,7 +225,7 @@
                                 @foreach($digitalExtensions as $extensionKey => $extensionGroup)
                                     @php($groupItems = $extensionGroup ?? [])
                                     @if(count($groupItems) > 0)
-                                        <div class="row flex-start mx-0 align-items-center">
+                                        <div class="row flex-start mx-0 align-items-center d-none" style="display:none;">
                                             <div class="product-description-label text-dark font-bold text-capitalize mb-2">{{ translate($extensionKey) }}:</div>
                                             <div class="list-inline checkbox-alphanumeric checkbox-alphanumeric--style-1 mb-0 mx-1 flex-start ps-0">
                                                 @foreach($groupItems as $index => $item)
@@ -242,7 +242,7 @@
                                 @endforeach
 
                                 {{-- Quantity and Buttons --}}
-                                <div class="mt-3 d-none">
+                                <div class="mt-3 d-none" style="display:none;">
                                     <div class="product-quantity d-flex flex-column __gap-15">
                                         <div class="d-flex align-items-center gap-3">
                                             <div class="product-description-label text-dark font-bold mt-0">{{ translate('quantity') }}:</div>

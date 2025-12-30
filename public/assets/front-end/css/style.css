@@ -50,6 +50,11 @@ a {
     .product-single-hover .product-price {
         justify-content: center;
     }
+
+    .product-buy-now-button, .product-add-to-cart-button {
+    padding: 0 6px !important;
+}
+
 }
 .product-single-hover.style--card {
     background-color: #fff;
@@ -89,9 +94,9 @@ a {
 .product-single-hover .single-product-details a {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
+    /* -webkit-line-clamp: 1;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis; */
     font-size: 0.875rem;
     line-height: 1.5rem;
 }
