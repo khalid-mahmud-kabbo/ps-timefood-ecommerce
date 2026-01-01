@@ -1224,9 +1224,9 @@
                     <a class="nav-link {{ Request::is('admin/third-party/fraud-checker/view') ? 'active' : '' }}"
                        href="{{ route('admin.third-party.fraud-checker.view') }}"
                        title="{{ translate('Fraud_Checking_Configuration') }}">
-                        <i class="fi fi-sr-fraud-prevention"></i>
+                        <i class="fi fi-sr-workflow-setting-alt"></i>
                         <span class="aside-mini-hidden-element text-truncate flex-grow-1">
-                            {{ translate('Fraud_Checking_Configuration') }}
+                            {{ translate('Fraud_Checker_Configuration') }}
                         </span>
                     </a>
                 </li>
@@ -1237,7 +1237,7 @@
                     <a class="nav-link {{ Request::is('admin/third-party/courier-configuration/view') ? 'active' : '' }}"
                        href="{{ route('admin.third-party.courier-configuration.view') }}"
                        title="{{ translate('Courier_Configuration') }}">
-                        <i class="fi fi-ss-person-carry-box"></i>
+                       <i class="fi fi-sr-workflow-setting-alt"></i>
                         <span class="aside-mini-hidden-element text-truncate flex-grow-1">
                             {{ translate('Courier_Configuration') }}
                         </span>

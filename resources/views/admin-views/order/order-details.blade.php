@@ -1395,13 +1395,18 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label for="">{{translate('delivery_service_name')}}</label>
-                                        <input class="form-control" type="text" name="delivery_service_name"
-                                               value="{{$order['delivery_service_name']}}" id="" required>
+                                        <select class="form-select" name="delivery_service_name" id="delivery_service_name">
+                                            <option value="">{{translate('select_delivery_service_name')}}</option>
+                                            <option value="pathao">{{translate('pathao')}}</option>
+                                            <option value="steadfast">{{translate('steadfast')}}</option>
+                                            <option value="redx">{{translate('redx')}}</option>
+                                        </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="">{{translate('tracking_id')}} ({{translate('optional')}})</label>
-                                        <input class="form-control" type="text" name="third_party_delivery_tracking_id"
+                                        <label for="">{{translate('note')}} ({{translate('optional')}})</label>
+                                        <textarea class="form-control" type="text" name="third_party_delivery_note"
                                                value="{{$order['third_party_delivery_tracking_id']}}" id="">
+                                        </textarea>
                                     </div>
                                     <button class="btn btn-primary" type="submit">{{translate('update')}}</button>
                                 </div>

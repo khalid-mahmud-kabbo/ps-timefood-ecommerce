@@ -593,21 +593,43 @@ if ($order['order_type'] == 'default_type') {
         return back();
     }
 
+
+
+
+
+
+
+
+
+
+
     public function updateDeliverInfo(Request $request): RedirectResponse
     {
         $updateData = [
             'delivery_type' => 'third_party_delivery',
             'delivery_service_name' => $request['delivery_service_name'],
-            'third_party_delivery_tracking_id' => $request['third_party_delivery_tracking_id'],
+            'third_party_delivery_tracking_id' => $request['third_party_delivery_note'],
             'delivery_man_id' => null,
             'deliveryman_charge' => 0,
             'expected_delivery_date' => null,
         ];
+
+        Log::info(["Delivery Service Name: ", $request['delivery_service_name']]);
+
         $this->orderRepo->update(id: $request['order_id'], data: $updateData);
 
         ToastMagic::success(translate('updated_successfully'));
         return back();
     }
+
+
+
+
+
+
+
+
+    
 
     public function addDeliveryMan(string|int $order_id, string|int $delivery_man_id): JsonResponse
     {
