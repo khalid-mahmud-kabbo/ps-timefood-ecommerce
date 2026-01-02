@@ -32,23 +32,39 @@ class RedxService
     }
 
     public function createParcel(array $payload)
-    {
-        Log::info('RedX Payload', $payload);
+{
+    Log::info('RedX Payload', $payload);
 
-        $response = $this->client()->post(
-            $this->baseUrl . '/parcel',
-            $payload
-        );
+    $response = $this->client()->post(
+        $this->baseUrl . '/parcel',
+        $payload
+    );
 
-        if ($response->failed()) {
-            Log::error('RedX Error', [
-                'status' => $response->status(),
-                'body'   => $response->body(),
-            ]);
-
-            throw new Exception('RedX parcel creation failed');
-        }
-
-        return $response->json();
+    if ($response->failed()) {
+        Log::error('RedX Error', [
+            'status' => $response->status(),
+            'body'   => $response->body(),
+        ]);
     }
+
+    return $response;
+}
+
+
+
+
+    public function getAreasByPostCode(string $postCode): array
+{
+    $response = $this->client()->get(
+        $this->baseUrl . '/areas',
+        ['post_code' => $postCode]
+    );
+
+    if ($response->failed()) {
+        throw new Exception('Failed to fetch RedX areas');
+    }
+
+    return $response->json('areas') ?? [];
+}
+
 }

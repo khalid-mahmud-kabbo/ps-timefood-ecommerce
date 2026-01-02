@@ -2546,4 +2546,5 @@ return [
 	"Client_Secret" => "Client Secret",
 	"The Order has been created on Pathao Courier. Consignment ID: " => "The Order has been created on Pathao Courier. Consignment ID: ",
 	"The_order_has_been_placed_on_pathao_successfully" => "The order has been placed on pathao successfully",
+	"The_order_has_been_placed_on_redx_successfully" => "The order has been placed on redx successfully",
 ];

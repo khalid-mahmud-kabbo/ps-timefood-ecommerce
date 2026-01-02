@@ -43,7 +43,7 @@ class CourierConfigureController extends BaseController
             $value = json_encode(['status' => $request->get('status', 1), 'api_key' => $request['api_key'], 'secret_key' => $request['secret_key']]);
             $this->businessSettingRepo->updateOrInsert(type: 'steadfast', value: $value);
         }elseif($service == 'redx'){
-            $value = json_encode(['status' => $request->get('status', 1), 'jwt_token' => $request['jwt_token']]);
+            $value = json_encode(['status' => $request->get('status', 1), 'base_url' => $request['base_url'], 'jwt_token' => $request['jwt_token']]);
             $this->businessSettingRepo->updateOrInsert(type: 'redx', value: $value);
         }else{
             ToastMagic::warning(translate($service . '_information_update_fail'));

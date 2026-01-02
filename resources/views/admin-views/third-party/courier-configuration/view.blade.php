@@ -230,6 +230,15 @@
                                     <div class="p-12 p-sm-20 bg-section rounded">
 
 
+                                         <div class="form-group">
+                                            <label class="form-label" for="">{{ translate('Base_Url') }}
+                                            </label>
+                                            <input type="text" id="base_url" name="base_url" class="form-control"
+                                                value="{{ $redx['base_url'] }}"
+                                                placeholder="{{ translate('Base_Url') }}">
+                                        </div>
+
+
                                         <div class="form-group">
                                             <label class="form-label" for="">{{ translate('Jwt_Token') }}
                                             </label>

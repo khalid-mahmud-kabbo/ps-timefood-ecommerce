@@ -665,17 +665,19 @@ private function pathao(Request $request): string
 {
     $order = $this->orderRepo->getFirstWhere(['id' => $request->order_id]);
     $shippingAddress = $order['shipping_address_data'];
-
-    Log::info(['shippingAddress' => $shippingAddress, ]);
+    $phone = preg_replace('/[^0-9]/', '', $shippingAddress->phone);
+    if (str_starts_with($phone, '880')) {
+        $phone = '0' . substr($phone, 3);
+    }
 
     $payload = [
         'customer_name'          => $shippingAddress->contact_person_name,
-        'customer_phone'         => $shippingAddress->phone,
+        'customer_phone'         => $phone,
         'delivery_area'          => $shippingAddress->city,
-        'delivery_area_id'       => $shippingAddress->city,
+        'delivery_area_id'       => 1,
         'customer_address'       => $shippingAddress->address,
         'merchant_invoice_id'    => (string) $order->id,
-        'cash_collection_amount' => (string) ($order->order_amount),
+        'cash_collection_amount' => (string) $order->order_amount,
         'parcel_weight'          => '0.5',
         'instruction'            => $order->note ?? '',
         'value'                  => (int) $order->order_amount,
@@ -684,14 +686,13 @@ private function pathao(Request $request): string
                 'name'     => 'Order #' . $order->id,
                 'category' => 'General',
                 'value'    => (int) $order->order_amount,
-            ]
+            ],
         ],
     ];
 
     $response = app(RedxService::class)->createParcel($payload);
-    
 
-    if (!$response->successful()) {
+     if (!$response->successful()) {
         throw new \Exception(
             $response->json('message') ?? 'Redx order creation failed'
         );
@@ -700,6 +701,7 @@ private function pathao(Request $request): string
     ToastMagic::success(translate('The_order_has_been_placed_on_redx_successfully'));
     return back();
 }
+
 
 
 
