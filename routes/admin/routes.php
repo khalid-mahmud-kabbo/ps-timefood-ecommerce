@@ -127,6 +127,7 @@ use App\Http\Controllers\Admin\Deliveryman\DeliveryManCashCollectController;
 use App\Http\Controllers\Admin\Settings\StorageConnectionSettingsController;
 use App\Http\Controllers\Admin\Settings\VendorRegistrationSettingController;
 use App\Http\Controllers\Admin\Notification\PushNotificationSettingsController;
+use App\Http\Controllers\Admin\Order\OrderWebhookController;
 use App\Http\Controllers\Admin\ThirdParty\BDCourierController;
 use App\Http\Controllers\Admin\ThirdParty\CourierConfigureController;
 
@@ -260,7 +261,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
             Route::post('digital-file-upload-after-sell', 'uploadDigitalFileAfterSell')->name('digital-file-upload-after-sell');
             Route::post('status', 'updateStatus')->name('status');
         });
-    });
+        Route::post('/webhook/{courier}', [OrderWebhookController::class, 'handle'])->name('courier.webhook');
+    }); 
 
     // Attribute
     Route::group(['prefix' => 'attribute', 'as' => 'attribute.', 'middleware' => ['module:product_management']], function () {

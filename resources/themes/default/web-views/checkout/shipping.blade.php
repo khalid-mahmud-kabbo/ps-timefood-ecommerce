@@ -84,7 +84,7 @@
                                                             </div>
                                                         </div>
                                                         @if(!auth('customer')->check())
-                                                            <div class="col-sm-12">
+                                                            <div class="col-sm-12 d-none">
                                                                 <div class="form-group">
                                                                     <label for="exampleInputEmail1">
                                                                         {{ translate('email')}} {{("(Optional)")}}
@@ -121,7 +121,7 @@
                                                                 <input type="text" class="form-control" name="city" id="city">
                                                             </div>
                                                         </div>
-                                                        <div class="col-6">
+                                                        <div class="col-6 d-none">
                                                             <div class="form-group">
                                                                 <label>{{ translate('zip_code')}} {{("(Optional)")}}</label>
                                                                 @if($zip_restrict_status == 1)
@@ -309,7 +309,7 @@
                                                             </div>
                                                         </div>
                                                         @if(!auth('customer')->check())
-                                                            <div class="col-sm-12">
+                                                            <div class="col-sm-12 d-none">
                                                                 <div class="form-group">
                                                                     <label
                                                                         for="exampleInputEmail1">{{ translate('email')}}
@@ -347,7 +347,7 @@
                                                                     name="billing_city" {{$billingAddresses->count()==0?'required':''}}>
                                                             </div>
                                                         </div>
-                                                        <div class="col-6">
+                                                        <div class="col-6 d-none">
                                                             <div class="form-group">
                                                                 <label>{{ translate('zip_code')}}
                                                                     <span class="text-danger">*</span></label>

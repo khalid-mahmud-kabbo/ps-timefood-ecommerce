@@ -16,7 +16,7 @@
 
         
             <div class="card-header px-20 py-3">
-                <h2>{{ translate('Fraud_Checking_Configuration') }}</h2>
+                <h2>{{ translate('Automated_Courier_Configuration') }}</h2>
                 <p class="mb-0 fs-12">
                     {{ translate('setup_Automation_Courier_to_place_and_analyze_orders') }}.
                 </p>
@@ -44,6 +44,9 @@
                                         <p class="mb-0 fs-12">
                                             {{ translate('provide_your_Pathao_Courier_Store_ID_and_Access_Token.') }}
                                         </p>
+                                        <a data-bs-toggle="modal"
+                                                       href="#pathao-modal"
+                                                       class="fs-12 text-decoration-underline">{{ translate('Get_Credential_Setup') }}</a>
                                     </div>
                                     <div class="d-flex gap-2">
                                         <a href="javascript:" class="fs-12 fw-semibold d-flex align-items-end view-btn">
@@ -113,7 +116,7 @@
                                         <div class="d-flex justify-content-end flex-wrap gap-3">
                                             <button type="reset" class="btn btn-secondary w-120 px-4">{{
                                                 translate('reset') }}</button>
-                                            <button type="submit"
+                                             <button type="submit"
                                                 class="btn btn-primary w-120 px-4">{{ translate('Update') }}</button>
                                         </div>
 
@@ -149,6 +152,9 @@
                                         <p class="mb-0 fs-12">
                                             {{ translate('provide_your_Steadfast_Courier_API_key_and_secret_key.') }}
                                         </p>
+                                        <a data-bs-toggle="modal"
+                                                       href="#steadfast-modal"
+                                                       class="fs-12 text-decoration-underline">{{ translate('Get_Credential_Setup') }}</a>
                                     </div>
                                     <div class="d-flex gap-2">
                                         <a href="javascript:" class="fs-12 fw-semibold d-flex align-items-end view-btn">
@@ -217,6 +223,9 @@
                                         <p class="mb-0 fs-12">
                                             {{ translate('provide_your_Redx_Courier_JWT_token.') }}
                                         </p>
+                                        <a data-bs-toggle="modal"
+                                                       href="#redx-modal"
+                                                       class="fs-12 text-decoration-underline">{{ translate('Get_Credential_Setup') }}</a>
                                     </div>
                                     <div class="d-flex gap-2">
                                         <a href="javascript:" class="fs-12 fw-semibold d-flex align-items-end view-btn">
@@ -281,4 +290,128 @@
 
 
 </div>
+
+
+
+
+ <div class="modal fade" id="pathao-modal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content"
+                     style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
+                    <div class="modal-header border-0 pb-0 d-flex justify-content-end">
+                        <button type="button" class="btn-close border-0 btn-circle bg-section2 shadow-none"
+                                data-bs-dismiss="modal" aria-label="Close">
+                        </button>
+                    </div>
+                    <div class="modal-body px-20 py-0 mb-30">
+                        <div class="d-flex gap-3 flex-column align-items-center text-center mb-4">
+                            <img width="80" src="{{ dynamicAsset(path: 'public/assets/back-end/img/pathao.svg') }}" alt="">
+                            <h4 class="modal-title"
+                                id="staticBackdropLabel">{{ translate('pathao_API_Set_up_Instructions') }}</h4>
+                        </div>
+
+                        <ol class="d-flex flex-column gap-2">
+                            <li>{{ translate('go_to_pathao_marchant_register_page') }} (<a
+                                    href="https://merchant.pathao.com/register"
+                                    target="_blank">{{ translate('click_here') }}</a>)
+                            </li>
+                            <li>{{ translate('fill_up_the_registration_form_and_click_on_register') }}</li>
+                            <li>{{ translate('go_to_the_Merchant_Dashboard_page') }}</li>
+                            <li>{{ translate('now_click_on_developers_API') }}</li>
+                            <li>{{ translate('on_this_you_can_see_your_api_credentials') }}</li>
+                            
+                        </ol>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="button" class="btn btn-primary px-5"
+                                    data-bs-dismiss="modal">{{ translate('got_it') }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+        <div class="modal fade" id="steadfast-modal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content"
+                     style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
+                    <div class="modal-header border-0 pb-0 d-flex justify-content-end">
+                        <button type="button" class="btn-close border-0 btn-circle bg-section2 shadow-none"
+                                data-bs-dismiss="modal" aria-label="Close">
+                        </button>
+                    </div>
+                    <div class="modal-body px-20 py-0 mb-30">
+                        <div class="d-flex gap-3 flex-column align-items-center text-center mb-4">
+                            <img width="80" src="{{ dynamicAsset(path: 'public/assets/back-end/img/steadfast.svg') }}" alt="">
+                            <h4 class="modal-title"
+                                id="staticBackdropLabel">{{ translate('steadfast_API_Set_up_Instructions') }}</h4>
+                        </div>
+
+                        <ol class="d-flex flex-column gap-2">
+                            <li>{{ translate('go_to_steadfast_marchant_register_page') }} (<a
+                                    href="https://www.steadfast.com.bd/register"
+                                    target="_blank">{{ translate('click_here') }}</a>)
+                            </li>
+                             <li>{{ translate('fill_up_the_registration_form_and_click_on_register') }}</li>
+                            <li>{{ translate('go_to_the_Merchant_Dashboard_page') }}</li>
+                            <li>{{ translate('now_click_on_developers_API') }}</li>
+                            <li>{{ translate('on_this_you_can_see_your_api_credentials') }}</li>
+                        </ol>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="button" class="btn btn-primary px-5"
+                                    data-bs-dismiss="modal">{{ translate('got_it') }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+         <div class="modal fade" id="redx-modal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content"
+                     style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
+                    <div class="modal-header border-0 pb-0 d-flex justify-content-end">
+                        <button type="button" class="btn-close border-0 btn-circle bg-section2 shadow-none"
+                                data-bs-dismiss="modal" aria-label="Close">
+                        </button>
+                    </div>
+                    <div class="modal-body px-20 py-0 mb-30">
+                        <div class="d-flex gap-3 flex-column align-items-center text-center mb-4">
+                            <img width="80" src="{{ dynamicAsset(path: 'public/assets/back-end/img/redx.svg') }}" alt="">
+                            <h4 class="modal-title"
+                                id="staticBackdropLabel">{{ translate('redx_API_Set_up_Instructions') }}</h4>
+                        </div>
+
+                        <ol class="d-flex flex-column gap-2">
+                            <li>{{ translate('go_to_redx_marchant_register_page') }} (<a
+                                    href="https://redx.com.bd/registration/"
+                                    target="_blank">{{ translate('click_here') }}</a>)
+                            </li>
+                            <li>{{ translate('fill_up_the_registration_form_and_click_on_register') }}</li>
+                            <li>{{ translate('go_to_the_Merchant_Dashboard_page') }}</li>
+                            <li>{{ translate('now_click_on_developers_API') }}</li>
+                            <li>{{ translate('on_this_you_can_see_your_api_credentials') }}</li>
+                        </ol>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="button" class="btn btn-primary px-5"
+                                    data-bs-dismiss="modal">{{ translate('got_it') }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 @endsection
