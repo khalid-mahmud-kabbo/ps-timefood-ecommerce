@@ -8,61 +8,44 @@ use Exception;
 
 class RedxService
 {
-    private function formatPhone(string $phone): string
-    {
-        $phone = preg_replace('/\s+/', '', $phone);
+    protected string $baseUrl;
+    protected string $token;
 
-        // Remove +88 or 88
-        if (str_starts_with($phone, '+88')) {
-            $phone = substr($phone, 3);
-        } elseif (str_starts_with($phone, '88')) {
-            $phone = substr($phone, 2);
-        }
-
-        // Must start with 01
-        if (!str_starts_with($phone, '01')) {
-            throw new Exception('Invalid Bangladeshi phone number for RedX');
-        }
-
-        return $phone; // RedX format
-    }
-
-    public function createParcel(array $data)
+    public function __construct()
     {
         $redx = getWebConfig('redx');
-        $payload = [
-            'customer_name'          => $data['customer_name'],
-            'customer_phone'         => $this->formatPhone($data['customer_phone']),
-            'customer_address'       => $data['customer_address'],
-            'delivery_area'          => $data['delivery_area'], // district name
-            'delivery_area_id'       => 1, // REQUIRED RedX area ID (Dhaka default)
-            'merchant_invoice_id'    => $data['merchant_invoice_id'],
-            'cash_collection_amount' => (int) $data['cash_collection_amount'],
-            'parcel_weight'          => (float) $data['parcel_weight'],
-            'instruction'            => $data['instruction'] ?? '',
-            'value'                  => (int) $data['cash_collection_amount'],
-            'parcel_details_json'    => [
-                [
-                    'name'     => 'Order #' . $data['merchant_invoice_id'],
-                    'category' => 'General',
-                    'value'    => (int) $data['cash_collection_amount'],
-                ]
-            ],
-        ];
+        $this->baseUrl = $redx['base_url'];
+        $this->token   = $redx['jwt_token'];
 
+        if (!$this->baseUrl || !$this->token) {
+            throw new Exception('RedX base URL or token missing');
+        }
+    }
+
+    protected function client()
+    {
+        return Http::withHeaders([
+            'API-ACCESS-TOKEN' => 'Bearer ' . $this->token,
+            'Content-Type'     => 'application/json',
+            'Accept'           => 'application/json',
+        ])->timeout(30);
+    }
+
+    public function createParcel(array $payload)
+    {
         Log::info('RedX Payload', $payload);
-        $url = 'https://openapi.redx.com.bd/v1.0.0-beta/parcel';
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $redx['jwt_token'],
-            'Content-Type'  => 'application/json',
-        ])->post($url, $payload);
+        $response = $this->client()->post(
+            $this->baseUrl . '/parcel',
+            $payload
+        );
 
-        if (!$response->successful()) {
+        if ($response->failed()) {
             Log::error('RedX Error', [
                 'status' => $response->status(),
                 'body'   => $response->body(),
             ]);
+
             throw new Exception('RedX parcel creation failed');
         }
 
