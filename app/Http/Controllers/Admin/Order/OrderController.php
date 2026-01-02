@@ -554,15 +554,20 @@ if ($order['order_type'] == 'default_type') {
     ];
 
     if ($request->delivery_service_name === 'pathao') {
-        $this->pathao($request);
-    }
+    $trackingId = $this->pathao($request);
+    $updateData['third_party_delivery_tracking_id'] = $trackingId;
+}
+
 
     if ($request->delivery_service_name === 'steadfast') {
+        $trackingId = $this->steadfast($request);
         $this->steadfast($request);
+        $updateData['third_party_delivery_tracking_id'] = $trackingId;
     }
 
     if ($request->delivery_service_name === 'redx') {
-        $this->redx($request);
+        $trackingId = $this->redx($request);
+        $updateData['third_party_delivery_tracking_id'] = $trackingId;
     }
 
     $this->orderRepo->update(
@@ -582,10 +587,13 @@ private function pathao(Request $request): string
     $order = $this->orderRepo->getFirstWhere(['id' => $request->order_id]);
     $shippingAddress = $order['shipping_address_data'] ?? null;
 
+    if (!$shippingAddress) {
+        throw new \Exception('Shipping address not found for this order.');
+    }
+
     $Name = $shippingAddress->contact_person_name ?? '';
     $Address = $shippingAddress->address ?? '';
-    $phone = $shippingAddress->phone ?? '';
-    $phone = preg_replace('/[^0-9]/', '', $phone);
+    $phone = preg_replace('/[^0-9]/', '', $shippingAddress->phone ?? '');
     if (str_starts_with($phone, '880')) {
         $phone = '0' . substr($phone, 3);
     } elseif (!str_starts_with($phone, '0')) {
@@ -619,21 +627,35 @@ private function pathao(Request $request): string
         );
     }
 
+    Log::info('Pathao Response', $response->json());
+
+    $trackingId = $response->json('data.merchant_order_id') 
+                  ?? $response->json('merchant_order_id');
+
+    if (!$trackingId) {
+        throw new \Exception('Pathao API did not return a tracking ID.');
+    }
+
     ToastMagic::success(translate('The_order_has_been_placed_on_pathao_successfully'));
-    return back();
+
+    return (string) $trackingId;
 }
 
 
 
 
 
-    private function steadfast(Request $request): string
+
+   private function steadfast(Request $request): string
 {
     $order = $this->orderRepo->getFirstWhere(['id' => $request->order_id]);
     $shippingAddress = $order['shipping_address_data'];
+
     $phone = preg_replace('/[^0-9]/', '', $shippingAddress->phone);
     if (str_starts_with($phone, '880')) {
         $phone = '0' . substr($phone, 3);
+    } elseif (!str_starts_with($phone, '0')) {
+        $phone = '0' . $phone;
     }
 
     $payload = [
@@ -649,15 +671,19 @@ private function pathao(Request $request): string
 
     $response = app(SteadfastService::class)->createOrder($payload);
 
-     if (!$response->successful()) {
-        throw new \Exception(
-            $response->json('message') ?? 'Steadfast order creation failed'
-        );
+    // Extract tracking code from API response
+    $trackingId = $response['consignment']['tracking_code'] ?? null;
+
+    if (!$trackingId) {
+        throw new \Exception('Failed to get Steadfast tracking ID');
     }
 
     ToastMagic::success(translate('The_order_has_been_placed_on_Steadfast_successfully'));
-    return back();
+
+    // Return the tracking ID instead of redirect
+    return $trackingId;
 }
+
 
 
 
@@ -699,7 +725,7 @@ private function pathao(Request $request): string
     }
 
     ToastMagic::success(translate('The_order_has_been_placed_on_redx_successfully'));
-    return back();
+    return $response->json('tracking_id');
 }
 
 

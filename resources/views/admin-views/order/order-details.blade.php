@@ -1404,8 +1404,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="">{{translate('note')}} ({{translate('optional')}})</label>
-                                        <textarea class="form-control" type="text" name="third_party_delivery_note"
-                                               value="{{$order['third_party_delivery_tracking_id']}}" id="">
+                                        <textarea class="form-control" type="text" name="note" id="note">
                                         </textarea>
                                     </div>
                                     <button class="btn btn-primary" type="submit">{{translate('update')}}</button>
