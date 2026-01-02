@@ -45,6 +45,9 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Services\PathaoService;
+use App\Services\RedxService;
+use App\Services\SteadfastService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Illuminate\Support\Facades\View as PdfView;
 
@@ -247,70 +250,6 @@ class OrderController extends BaseController
     }
 
 
-
-
-
-
-
-
-
-
-        // public function getView(string|int $id, DeliveryCountryCodeService $service, OrderService $orderService): View|RedirectResponse
-        // {
-        //     $countryRestrictStatus = getWebConfig(name: 'delivery_country_restriction');
-        //     $zipRestrictStatus = getWebConfig(name: 'delivery_zip_code_area_restriction');
-        //     $deliveryCountry = $this->deliveryCountryCodeRepo->getList(dataLimit: 'all');
-        //     $countries = $countryRestrictStatus ? $service->getDeliveryCountryArray(deliveryCountryCodes: $deliveryCountry) : GlobalConstant::COUNTRIES;
-        //     $zipCodes = $zipRestrictStatus ? $this->deliveryZipCodeRepo->getList(dataLimit: 'all') : 0;
-        //     $companyName = getWebConfig(name: 'company_name');
-        //     $companyWebLogo = getWebConfig(name: 'company_web_logo');
-        //     $order = $this->orderRepo->getFirstWhere(params: ['id' => $id], relations: ['details.productAllStatus', 'verificationImages', 'shipping', 'seller.shop', 'offlinePayments', 'deliveryMan']);
-
-        //     if ($order) {
-        //         $physicalProduct = false;
-        //         if (isset($order->details)) {
-        //             foreach ($order->details as $orderDetail) {
-        //                 $orderDetailProduct = json_decode($orderDetail?->product_details, true);
-        //                 if (isset($orderDetail?->product?->product_type) && $orderDetail?->product?->product_type == 'physical') {
-        //                     $physicalProduct = true;
-        //                 } else if ($orderDetailProduct && isset($orderDetailProduct['product_type']) && $orderDetailProduct['product_type'] == 'physical') {
-        //                     $physicalProduct = true;
-        //                 }
-        //             }
-        //         }
-
-        //         $whereNotIn = [
-        //             'order_group_id' => ['def-order-group'],
-        //             'id' => [$order['id']],
-        //         ];
-        //         $linkedOrders = $this->orderRepo->getListWhereNotIn(filters: ['order_group_id' => $order['order_group_id']], whereNotIn: $whereNotIn, dataLimit: 'all');
-        //         $totalDelivered = $this->orderRepo->getListWhere(filters: ['seller_id' => $order['seller_id'], 'order_status' => 'delivered', 'order_type' => 'default_type'], dataLimit: 'all')->count();
-        //         $shippingMethod = getWebConfig('shipping_method');
-
-        //         $sellerId = 0;
-        //         if ($order['seller_is'] == 'seller' && $shippingMethod == 'sellerwise_shipping') {
-        //             $sellerId = $order['seller_id'];
-        //         }
-        //         $filters = [
-        //             'is_active' => 1,
-        //             'seller_id' => $sellerId,
-        //         ];
-        //         $deliveryMen = $this->deliveryManRepo->getListWhere(filters: $filters, dataLimit: 'all');
-        //         $isOrderOnlyDigital = $orderService->getCheckIsOrderOnlyDigital(order: $order);
-        //         if ($order['order_type'] == 'default_type') {
-        //             $orderCount = $this->orderRepo->getListWhereCount(filters: ['customer_id' => $order['customer_id']]);
-        //             return view(Order::VIEW[VIEW], compact('order', 'linkedOrders',
-        //                 'deliveryMen', 'totalDelivered', 'companyName', 'companyWebLogo', 'physicalProduct',
-        //                 'countryRestrictStatus', 'zipRestrictStatus', 'countries', 'zipCodes', 'orderCount', 'isOrderOnlyDigital'));
-        //         } else {
-        //             $orderCount = $this->orderRepo->getListWhereCount(filters: ['customer_id' => $order['customer_id'], 'order_type' => 'POS']);
-        //             return view(Order::VIEW_POS[VIEW], compact('order', 'companyName', 'companyWebLogo', 'orderCount'));
-        //         }
-        //     } else {
-        //         ToastMagic::error(translate('Order_not_found'));
-        //         return back();
-        //     }
-        // }
 
 
 
@@ -604,32 +543,169 @@ if ($order['order_type'] == 'default_type') {
 
 
     public function updateDeliverInfo(Request $request): RedirectResponse
-    {
-        $updateData = [
-            'delivery_type' => 'third_party_delivery',
-            'delivery_service_name' => $request['delivery_service_name'],
-            'third_party_delivery_tracking_id' => $request['third_party_delivery_note'],
-            'delivery_man_id' => null,
-            'deliveryman_charge' => 0,
-            'expected_delivery_date' => null,
-        ];
+{
+    $updateData = [
+        'delivery_type' => 'third_party_delivery',
+        'delivery_service_name' => $request->delivery_service_name,
+        'third_party_delivery_tracking_id' => null,
+        'delivery_man_id' => null,
+        'deliveryman_charge' => 0,
+        'expected_delivery_date' => null,
+    ];
 
-        Log::info(["Delivery Service Name: ", $request['delivery_service_name']]);
-
-        $this->orderRepo->update(id: $request['order_id'], data: $updateData);
-
-        ToastMagic::success(translate('updated_successfully'));
-        return back();
+    if ($request->delivery_service_name === 'pathao') {
+        $this->pathao($request);
     }
 
+    if ($request->delivery_service_name === 'steadfast') {
+        $this->steadfast($request);
+    }
+
+    if ($request->delivery_service_name === 'redx') {
+        $this->redx($request);
+    }
+
+    $this->orderRepo->update(
+        id: $request->order_id,
+        data: $updateData
+    );
+
+    ToastMagic::success(translate('updated_successfully'));
+    return back();
+}
+
+
+
+
+private function pathao(Request $request): string
+{
+    $order = $this->orderRepo->getFirstWhere(['id' => $request->order_id]);
+    $shippingAddress = $order['shipping_address_data'] ?? null;
+
+    $Name = $shippingAddress->contact_person_name ?? '';
+    $Address = $shippingAddress->address ?? '';
+    $phone = $shippingAddress->phone ?? '';
+    $phone = preg_replace('/[^0-9]/', '', $phone);
+    if (str_starts_with($phone, '880')) {
+        $phone = '0' . substr($phone, 3);
+    } elseif (!str_starts_with($phone, '0')) {
+        $phone = '0' . $phone;
+    }
+
+    $totalPrice = $order->order_amount;
+
+    $pathao = getWebConfig('pathao');
+
+    $payload = [
+        'store_id'            => $pathao['store_id'],
+        'merchant_order_id'   => (string)$order->id,
+        'recipient_name'      => $Name,
+        'recipient_phone'     => $phone,
+        'recipient_address'   => $Address,
+        'delivery_type'       => 48,
+        'item_type'           => 2,
+        'special_instruction' => $order->note ?? '',
+        'item_quantity'       => 1,
+        'item_weight'         => 0.5,
+        'item_description'    => 'Order #' . $order->id,
+        'amount_to_collect'   => (int)$totalPrice,
+    ];
+
+    $response = app(PathaoService::class)->createOrder($payload);
+
+    if (!$response->successful()) {
+        throw new \Exception(
+            $response->json('message') ?? 'Pathao order creation failed'
+        );
+    }
+
+    ToastMagic::success(translate('The_order_has_been_placed_on_pathao_successfully'));
+    return back();
+}
 
 
 
 
 
+    private function steadfast(Request $request): string
+{
+    $order = $this->orderRepo->getFirstWhere(['id' => $request->order_id]);
+    $shippingAddress = $order['shipping_address_data'];
+    $phone = preg_replace('/[^0-9]/', '', $shippingAddress->phone);
+    if (str_starts_with($phone, '880')) {
+        $phone = '0' . substr($phone, 3);
+    }
+
+    $payload = [
+        'invoice'           => (string) $order->id,
+        'recipient_name'    => $shippingAddress->contact_person_name,
+        'recipient_phone'   => $phone,
+        'recipient_address' => $shippingAddress->address,
+        'cod_amount'        => (int) ($order->order_amount),
+        'note'              => $order->note ?? '',
+        'item_description'  => 'Order #' . $order->id,
+        'delivery_type'     => 0,
+    ];
+
+    $response = app(SteadfastService::class)->createOrder($payload);
+
+     if (!$response->successful()) {
+        throw new \Exception(
+            $response->json('message') ?? 'Steadfast order creation failed'
+        );
+    }
+
+    ToastMagic::success(translate('The_order_has_been_placed_on_Steadfast_successfully'));
+    return back();
+}
 
 
+
+   private function redx(Request $request): string
+{
+    $order = $this->orderRepo->getFirstWhere(['id' => $request->order_id]);
+    $shippingAddress = $order['shipping_address_data'];
+
+    Log::info(['shippingAddress' => $shippingAddress, ]);
+
+    $payload = [
+        'customer_name'          => $shippingAddress->contact_person_name,
+        'customer_phone'         => $shippingAddress->phone,
+        'delivery_area'          => $shippingAddress->city,
+        'delivery_area_id'       => $shippingAddress->city,
+        'customer_address'       => $shippingAddress->address,
+        'merchant_invoice_id'    => (string) $order->id,
+        'cash_collection_amount' => (string) ($order->order_amount),
+        'parcel_weight'          => '0.5',
+        'instruction'            => $order->note ?? '',
+        'value'                  => (int) $order->order_amount,
+        'parcel_details_json'    => [
+            [
+                'name'     => 'Order #' . $order->id,
+                'category' => 'General',
+                'value'    => (int) $order->order_amount,
+            ]
+        ],
+    ];
+
+    $response = app(RedxService::class)->createParcel($payload);
     
+
+    if (!$response->successful()) {
+        throw new \Exception(
+            $response->json('message') ?? 'Redx order creation failed'
+        );
+    }
+
+    ToastMagic::success(translate('The_order_has_been_placed_on_redx_successfully'));
+    return back();
+}
+
+
+
+
+
+
 
     public function addDeliveryMan(string|int $order_id, string|int $delivery_man_id): JsonResponse
     {

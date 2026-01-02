@@ -2538,4 +2538,12 @@ return [
 	"the_two-in-one_benefits_of_‘Offline_Payment_Method’_Feature" => "The two-in-one benefits of ‘Offline Payment Method’ Feature",
 	"get_paid_from_customers" => "Get paid from customers",
 	"introduce_more_convenient_payment_methods_for_customersEnjoy" => "Introduce more convenient payment methods for customersEnjoy",
+	"Client_Id" => "Client Id",
+	"Store_id" => "Store id",
+	"Client_Cecret" => "Client Cecret",
+	"username" => "Username",
+	"Base_Url" => "Base Url",
+	"Client_Secret" => "Client Secret",
+	"The Order has been created on Pathao Courier. Consignment ID: " => "The Order has been created on Pathao Courier. Consignment ID: ",
+	"The_order_has_been_placed_on_pathao_successfully" => "The order has been placed on pathao successfully",
 ];

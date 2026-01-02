@@ -37,7 +37,7 @@ class CourierConfigureController extends BaseController
     public function update(Request $request, $service): RedirectResponse
     {
         if($service == 'pathao'){
-            $value = json_encode(['status' => $request->get('status', 1), 'store_id' => $request['store_id'], 'access_token' => $request['access_token']]);
+            $value = json_encode(['status' => $request->get('status', 1), 'client_id' => $request['client_id'], 'store_id' => $request['store_id'], 'client_secret' => $request['client_secret'], 'username' => $request['username'], 'password' => $request['password'], 'base_url' => $request['base_url']]);
             $this->businessSettingRepo->updateOrInsert(type: 'pathao', value: $value);
         }elseif($service == 'steadfast'){
             $value = json_encode(['status' => $request->get('status', 1), 'api_key' => $request['api_key'], 'secret_key' => $request['secret_key']]);

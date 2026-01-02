@@ -58,20 +58,53 @@
 
 
                                         <div class="form-group">
-                                            <label class="form-label" for="">{{ translate('Store_ID') }}
+                                            <label class="form-label" for="">{{ translate('Base_Url') }}
+                                            </label>
+                                            <input type="text" id="base_url" name="base_url" class="form-control"
+                                                value="{{ $pathao['base_url'] }}"
+                                                placeholder="{{ translate('Base_Url') }}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="">{{ translate('Client_Id') }}
+                                            </label>
+                                            <input type="text" id="client_id" name="client_id" class="form-control"
+                                                value="{{ $pathao['client_id'] }}"
+                                                placeholder="{{ translate('Client_Id') }}">
+                                        </div>
+
+
+
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="">{{ translate('Store_id') }}
                                             </label>
 
 
                                             <input type="text" id="store_id" name="store_id" class="form-control"
                                                 value="{{ $pathao['store_id'] }}"
-                                                placeholder="{{ translate('Store_ID') }}">
+                                                placeholder="{{ translate('Store_id') }}">
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="form-label" for="">{{ translate('Access_Token') }}</label>
-                                            <input type="text" id="access_token" name="access_token"
-                                                class="form-control" value="{{ $pathao['access_token'] }}"
-                                                placeholder="{{ translate('Access_Token') }}">
+                                            <label class="form-label" for="">{{ translate('Client_Secret') }}</label>
+                                            <input type="text" id="client_secret" name="client_secret"
+                                                class="form-control" value="{{ $pathao['client_secret'] }}"
+                                                placeholder="{{ translate('Client_Secret') }}">
+                                        </div>
+
+                                          <div class="form-group">
+                                            <label class="form-label" for="">{{ translate('username') }}</label>
+                                            <input type="text" id="username" name="username"
+                                                class="form-control" value="{{ $pathao['username'] }}"
+                                                placeholder="{{ translate('username') }}">
+                                        </div>
+
+                                          <div class="form-group">
+                                            <label class="form-label" for="">{{ translate('password') }}</label>
+                                            <input type="text" id="password" name="password"
+                                                class="form-control" value="{{ $pathao['password'] }}"
+                                                placeholder="{{ translate('password') }}">
                                         </div>
 
 
